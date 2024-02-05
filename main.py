@@ -55,10 +55,10 @@ async def main():
 
     #  Move stuff
     await positioner.set_speed(1000, 1000)
-    await positioner.go_to(-58, 7)  # this is the center
-    await system.set_mode("idle")
+    await positioner.go_to(0, 0)
     await gimbal.go_to(0, 0)
     await asyncio.sleep(3)
+    await system.set_mode("idle")
     # asyncio.create_task(system.read_trajectory())
 
     # asyncio.create_task(system.mode_manager())

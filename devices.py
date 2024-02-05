@@ -105,8 +105,8 @@ class Positioner:
         await self._send_cmd(self.el_controller._set_max_velocity(abs(self._el_to_steps(el_deg_sec)) * 100))
 
     async def go_to(self, az, el):
-        await self._send_cmd(self.az_controller.move(self._az_to_steps(az)))
-        await self._send_cmd(self.el_controller.move(self._el_to_steps(el)))
+        await self._send_cmd(self.az_controller.move(self._az_to_steps(az+self.zero_position[0])))
+        await self._send_cmd(self.el_controller.move(self._el_to_steps(el+self.zero_position[1])))
 
     async def go_to_at_speed(self, az, el, az_deg_sec, el_deg_sec):
         await self.set_speed(az_deg_sec, el_deg_sec)
@@ -133,7 +133,7 @@ class Positioner:
         if el_position_uncertain:
             await self._send_cmd(self.el_controller.perform_homing(dir=0))
         el_pos = round(self._steps_to_el(rec[1]), 1)
-        self.position = (az_pos, el_pos)
+        self.position = (az_pos+self.zero_position[0], el_pos+self.zero_position[1])
 
     async def update_position(self, delay_sec):
         while True:
@@ -237,7 +237,7 @@ class System:
         signal_hist = None
         while True:
             nodes_signals = []
-            # current_Az, current_El = -(self.next_trajectory_position[0] + 58), self.next_trajectory_position[1] - 7
+            # current_Az, current_El = -self.next_trajectory_position[0], self.next_trajectory_position[1]
             current_Az, current_El = self.gimbal.position
             for node in algo.sample_nodes(current_Az, current_El):  # go to nodes and save the signal at each node
                 await self.gimbal.go_to(node[0], node[1])
@@ -314,4 +314,4 @@ class Tracking_algo:
         self.step_size = round(self.step_size/1.2, 1) if self.step_size > 0.1 else 0.1
 
     def decrease_jitter(self):
-        self.jitter_step = round(self.jitter_step/1.2, 1) if self.jitter_step > 0.3 else 0.3
+        self.jitter_step = round(self.jitter_step/1.2, 1) if self.jitter_step > 0.05 else 0.05

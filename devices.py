@@ -232,7 +232,7 @@ class System:
 
     async def track_signal(self):  # 5 points
         await self.gimbal.set_speed(2, 2)
-        algo = Tracking_algo(init_step_size=0.1, init_jitter_step=0.2)
+        algo = DiscreteTrackingAlgo(init_step_size=0.1, init_jitter_step=0.2)
         time_between_nodes = 0.75  # [sec]
         signal_hist = None
         nominal_Az, nominal_El = self.gimbal.position
@@ -254,7 +254,7 @@ class System:
 
     # async def track_signal(self):  # 4 points
     #     await self.gimbal.set_speed(2, 2)
-    #     algo = Tracking_algo(init_step_size=0.1, init_jitter_step=0.2)
+    #     algo = DiscreteTrackingAlgo(init_step_size=0.1, init_jitter_step=0.2)
     #     time_between_nodes = 0.75  # [sec]
     #     nominal_Az, nominal_El = self.gimbal.position
     #     while True:
@@ -293,7 +293,7 @@ class System:
             await asyncio.sleep(1)
 
 
-class Tracking_algo:
+class DiscreteTrackingAlgo:
     def __init__(self, init_step_size, init_jitter_step):
         self.step_size = init_step_size
         self.jitter_step = init_jitter_step
@@ -328,3 +328,56 @@ class Tracking_algo:
 
     def decrease_jitter(self):
         self.jitter_step = round(self.jitter_step/1.2, 1) if self.jitter_step > 0.05 else 0.05
+
+
+class ESC:
+    def __init__(self):
+        pass
+
+"""
+freq = 100; % sample frequency
+dt = 1/freq;
+T = 10; % total period of simulation (in seconds)
+
+% perturbation parameters
+A = .2;  % amplitude
+omega = 10*2*pi; % 10 Hz
+phase = 0;
+K = 5;   % integration gain
+
+% high pass filter
+butterorder=1;
+butterfreq=2;  % in Hz for 'high'
+[b,a] = butter(butterorder,butterfreq*dt*2,'high')
+ys = zeros(1,butterorder+1)+y0;
+HPF=zeros(1,butterorder+1);
+
+uhat=u;
+for i=1:T/dt
+    t = (i-1)*dt;
+    time(i) = t;
+    yvals(i)=J(u,t);
+    
+    for k=1:butterorder
+        ys(k) = ys(k+1);
+        HPF(k) = HPF(k+1);
+    end
+    ys(butterorder+1) = yvals(i);
+    
+    HPFnew = 0;
+    for k=1:butterorder+1
+        HPFnew = HPFnew + b(k)*ys(butterorder+2-k);
+    end
+    for k=2:butterorder+1
+        HPFnew = HPFnew - a(k)*HPF(butterorder+2-k);
+    end
+    HPFnew = HPFnew/a(1);
+    HPF(butterorder+1) = HPFnew;
+    
+    xi = HPFnew*sin(omega*t + phase);
+    uhat = uhat + xi*K*dt;
+    u = uhat + A*sin(omega*t + phase);
+    uhats(i) = uhat;
+    uvals(i) = u;    
+end
+"""

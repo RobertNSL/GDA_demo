@@ -1,0 +1,128 @@
+2024/02/04 18:54:22 PyTic        INFO     Network is connected - Keysight Technologies,N5234B,MY58421805,A.14.80.08
+2024/02/04 18:54:22 PyTic        INFO     Network configed
+2024/02/04 18:54:22 PyTic        INFO     Newmark is connected at COM5
+2024/02/04 18:54:22 PyTic        INFO     Positioner is connected
+2024/02/04 18:54:22 PyTic        INFO     System mode set to - idle
+2024/02/04 18:54:22 __main__     INFO     Positioner: None, Gimbal: None, Signal: None
+2024/02/04 18:54:27 __main__     INFO     Positioner: (-41.3, 7.0), Gimbal: (0.0, 0.0), Signal: -74.7
+2024/02/04 18:54:32 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.0, 0.0), Signal: -52.2
+2024/02/04 18:54:37 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.0, 0.0), Signal: -52.5
+2024/02/04 18:54:42 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.0, 0.0), Signal: -52.1
+2024/02/04 18:54:44 __main__     INFO     User cmd: system.set_mode("track_signal")
+2024/02/04 18:54:44 PyTic        INFO     System mode set to - track_signal
+2024/02/04 18:54:47 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.0, -0.2), Signal: -56.4
+2024/02/04 18:54:52 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.3, 0.2), Signal: -46.2
+2024/02/04 18:54:57 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.3, 0.4), Signal: -44.9
+2024/02/04 18:55:02 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.2, 0.6), Signal: -45.6
+2024/02/04 18:55:07 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.3, 0.5), Signal: -44.7
+2024/02/04 18:55:12 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.3), Signal: -44.3
+2024/02/04 18:55:17 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.9, 0.3), Signal: -44.7
+2024/02/04 18:55:22 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.6), Signal: -45.4
+2024/02/04 18:55:27 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.5, 0.3), Signal: -44.1
+2024/02/04 18:55:32 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.2), Signal: -43.8
+2024/02/04 18:55:37 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.4), Signal: -43.8
+2024/02/04 18:55:42 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.5), Signal: -44.5
+2024/02/04 18:55:47 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.4), Signal: -44.9
+2024/02/04 18:55:52 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.1), Signal: -44.3
+2024/02/04 18:55:57 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.3), Signal: -43.7
+2024/02/04 18:56:01 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:02 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (1.0, 0.3), Signal: -44.1
+2024/02/04 18:56:07 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.6), Signal: -45.2
+2024/02/04 18:56:11 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:13 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.3), Signal: -43.9
+2024/02/04 18:56:16 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:17 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:18 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.9, 0.0), Signal: -44.8
+2024/02/04 18:56:18 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:20 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:23 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (1.0, 0.3), Signal: -44.5
+2024/02/04 18:56:23 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:27 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:28 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.6), Signal: -45.3
+2024/02/04 18:56:28 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:29 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:30 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:32 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:33 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.5, 0.3), Signal: -44.0
+2024/02/04 18:56:33 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:34 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:38 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.2), Signal: -43.9
+2024/02/04 18:56:43 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.4), Signal: -44.1
+2024/02/04 18:56:48 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.9, 0.4), Signal: -44.0
+2024/02/04 18:56:50 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:52 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:53 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.6), Signal: -44.4
+2024/02/04 18:56:54 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:55 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:56:58 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.3), Signal: -44.5
+2024/02/04 18:57:03 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.1), Signal: -44.9
+2024/02/04 18:57:06 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:08 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:08 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (1.0, 0.3), Signal: -44.9
+2024/02/04 18:57:09 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:10 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:13 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.4), Signal: -44.3
+2024/02/04 18:57:18 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.3), Signal: -44.2
+2024/02/04 18:57:23 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.0), Signal: -46.0
+2024/02/04 18:57:23 __main__     INFO     User cmd: system.set_mode("idle")
+2024/02/04 18:57:23 PyTic        INFO     System mode set to - idle
+2024/02/04 18:57:28 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.0), Signal: -45.9
+2024/02/04 18:57:33 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.0), Signal: -46.0
+2024/02/04 18:57:38 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.0), Signal: -46.0
+2024/02/04 18:57:41 __main__     INFO     User cmd: system.set_mode("track_signal")
+2024/02/04 18:57:41 PyTic        INFO     System mode set to - track_signal
+2024/02/04 18:57:43 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.2), Signal: -44.4
+2024/02/04 18:57:48 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.1), Signal: -45.4
+2024/02/04 18:57:50 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:52 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:53 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.0), Signal: -46.0
+2024/02/04 18:57:53 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:54 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:55 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:56 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:57:58 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.4), Signal: -43.9
+2024/02/04 18:58:03 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.9, 0.3), Signal: -44.1
+2024/02/04 18:58:06 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:58:07 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:58:08 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.6), Signal: -45.2
+2024/02/04 18:58:09 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:58:10 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:58:11 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:58:13 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:58:13 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.5, 0.3), Signal: -44.2
+2024/02/04 18:58:14 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:58:18 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.2), Signal: -44.2
+2024/02/04 18:58:23 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.4), Signal: -44.2
+2024/02/04 18:58:28 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.5), Signal: -44.4
+2024/02/04 18:58:33 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.5, 0.4), Signal: -44.2
+2024/02/04 18:58:37 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:58:38 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.2), Signal: -45.1
+2024/02/04 18:58:43 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.3), Signal: -44.0
+2024/02/04 18:58:48 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.9, 0.4), Signal: -44.2
+2024/02/04 18:58:53 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.5), Signal: -44.4
+2024/02/04 18:58:58 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.2), Signal: -44.3
+2024/02/04 18:59:03 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.2), Signal: -44.2
+2024/02/04 18:59:08 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.3), Signal: -44.1
+2024/02/04 18:59:13 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.4), Signal: -45.2
+2024/02/04 18:59:18 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.5), Signal: -44.4
+2024/02/04 18:59:23 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.2), Signal: -44.2
+2024/02/04 18:59:27 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:59:28 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.4), Signal: -44.0
+2024/02/04 18:59:33 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.9, 0.3), Signal: -44.2
+2024/02/04 18:59:38 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.6), Signal: -45.0
+2024/02/04 18:59:43 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.6, 0.3), Signal: -44.8
+2024/02/04 18:59:48 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.2), Signal: -44.0
+2024/02/04 18:59:48 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:59:52 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:59:53 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.4), Signal: -44.0
+2024/02/04 18:59:55 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:59:56 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 18:59:58 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.8, 0.3), Signal: -44.4
+2024/02/04 19:00:00 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 19:00:03 __main__     INFO     User cmd: signal.RSSI
+2024/02/04 19:00:03 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.5, 0.4), Signal: -44.1
+2024/02/04 19:00:08 __main__     INFO     Positioner: (-58.0, 7.0), Gimbal: (0.7, 0.1), Signal: -45.0
+2024/02/04 19:00:09 __main__     INFO     User cmd: exit
+2024/02/04 19:00:09 PyTic        INFO     Positioner disconnected
+2024/02/04 19:00:09 PyTic        INFO     Newmark disconnected
+2024/02/04 19:00:09 PyTic        INFO     Network is disconnected

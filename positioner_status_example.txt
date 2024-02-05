@@ -1,0 +1,59 @@
+Name:                         Tic 36v4 High-Power Stepper Motor Controller
+Serial number:                00314754
+Firmware version:             1.07
+Last reset:                   Power-on reset
+Up time:                      6:15:02
+
+Encoder position:             -1
+RC pulse width:               N/A
+Input state:                  Velocity
+Input after averaging:        N/A
+Input after hysteresis:       N/A
+Input before scaling:         N/A
+Input after scaling:          0
+Forward limit active:         Yes
+Reverse limit active:         No
+
+VIN voltage:                  27.693 V
+Operation state:              Normal
+Energized:                    Yes
+Homing active:                Yes
+
+Target velocity:              -500000
+Current position:             17
+Position uncertain:           Yes
+Current velocity:             -500000
+Max speed:                    20000000
+Starting speed:               0
+Max acceleration:             1000000
+Max deceleration:             1000000
+Acting target position:       0
+Time since last step:         30000
+Step mode:                    1/4 step
+Current limit:                2793 mA
+
+Errors currently stopping the motor: None
+Errors that occurred since last check: None
+Last motor driver errors:
+  - Undervoltage
+
+SCL pin:
+  State:                      Output low
+  Analog reading:             N/A
+  Digital reading:            1
+SDA pin:
+  State:                      Output low
+  Analog reading:             N/A
+  Digital reading:            1
+TX pin:
+  State:                      Output high
+  Analog reading:             N/A
+  Digital reading:            1
+RX pin:
+  State:                      Pulled up
+  Analog reading:             N/A
+  Digital reading:            0
+RC pin:
+  Digital reading:            1
+
+

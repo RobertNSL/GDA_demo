@@ -230,21 +230,21 @@ class System:
     async def idle(self):
         pass
 
-    async def track_signal(self):
+    async def track_signal(self):  # 5 points
         await self.gimbal.set_speed(2, 2)
         algo = Tracking_algo(init_step_size=0.1, init_jitter_step=0.2)
         time_between_nodes = 0.75  # [sec]
         signal_hist = None
+        nominal_Az, nominal_El = self.gimbal.position
         while True:
             nodes_signals = []
             # current_Az, current_El = -self.next_trajectory_position[0], self.next_trajectory_position[1]
-            current_Az, current_El = self.gimbal.position
-            for node in algo.sample_nodes(current_Az, current_El):  # go to nodes and save the signal at each node
+            for node in algo.sample_nodes(nominal_Az, nominal_El):  # go to nodes and save the signal at each node
                 await self.gimbal.go_to(node[0], node[1])
                 await asyncio.sleep(time_between_nodes)
                 nodes_signals.append(self.signal.RSSI)
-            new_az, new_el = algo.next_position(nodes_signals, current_Az, current_El)
-            await self.gimbal.go_to(new_az, new_el)
+            nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
+            await self.gimbal.go_to(nominal_Az, nominal_El)
             await asyncio.sleep(time_between_nodes)
             if signal_hist and signal_hist > self.signal.RSSI:  # check if step size decrease needed
                 if algo.step_size > 0.1:
@@ -252,10 +252,23 @@ class System:
                 else:
                     algo.decrease_jitter()
 
+    # async def track_signal(self):  # 4 points
+    #     await self.gimbal.set_speed(2, 2)
+    #     algo = Tracking_algo(init_step_size=0.1, init_jitter_step=0.2)
+    #     time_between_nodes = 0.75  # [sec]
+    #     nominal_Az, nominal_El = self.gimbal.position
+    #     while True:
+    #         nodes_signals = []
+    #         nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
+    #         for node in algo.sample_nodes(nominal_Az, nominal_El):  # go to nodes and save the signal at each node
+    #             await self.gimbal.go_to(node[0], node[1])
+    #             await asyncio.sleep(time_between_nodes)
+    #             nodes_signals.append(self.signal.RSSI)
+
     async def search(self):
         await self.gimbal.set_speed(10, 10)
         while True:
-            nominal_az, nominal_el = -(self.next_trajectory_position[0]+58), self.next_trajectory_position[1]-7 # TODO
+            nominal_az, nominal_el = -self.next_trajectory_position[0], self.next_trajectory_position[1]  # TODO
             await self.gimbal.go_to(nominal_az, nominal_el)
             await asyncio.sleep(1)
 

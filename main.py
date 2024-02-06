@@ -51,7 +51,7 @@ async def main():
     await asyncio.gather(signal.connect(), positioner.connect(), gimbal.connect())
 
     # Start logger
-    asyncio.create_task(logging_task(logger, positioner, gimbal, signal, freq_sec=5))
+    asyncio.create_task(logging_task(logger, positioner, gimbal, signal, freq_sec=1))
 
     #  Move stuff
     await positioner.set_speed(1000, 1000)

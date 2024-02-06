@@ -36,9 +36,11 @@ class Newmark:
 
     async def set_speed(self, speed_az, speed_el):  # deg/sec
         self.g.GCommand(f'SPA={speed_az*self.Az_steps_in_deg};SPB={speed_el*self.El_steps_in_deg}')
+        logger.info(f"Gimbal speed set to: {speed_az, speed_el} [deg/sec]")
 
     async def set_acceleration(self, acc_az, acc_el):
         self.g.GCommand(f'ACA={acc_az * self.Az_steps_in_deg};ACB={acc_el * self.El_steps_in_deg};DCA={acc_az * self.Az_steps_in_deg};DCB={acc_el * self.El_steps_in_deg}')
+        logger.info(f"Gimbal acceleration set to: {acc_az, acc_el} [deg/sec^2]")
 
     async def read_position(self, delay_sec):
         while self.g:
@@ -238,6 +240,7 @@ class System:
         await self.gimbal.set_acceleration(5, 5)
         algo = DiscreteTrackingAlgo(init_step_size=0.3, init_jitter_step=0.3)
         time_between_nodes = 0.4  # [sec]
+        logger.info(f"time_between_nodes={time_between_nodes}")
         nominal_Az, nominal_El = self.gimbal.position
         signal_mean_prev = None
         while True:
@@ -294,6 +297,7 @@ class DiscreteTrackingAlgo:
     def __init__(self, init_step_size, init_jitter_step):
         self.step_size = init_step_size
         self.jitter_step = init_jitter_step
+        logger.info(f"Algo=DiscreteTrackingAlgo, init_step_size={init_step_size}, init_jitter_step={init_jitter_step}")
 
     def sample_nodes(self, current_Az, current_El):
         """ calculate AZ, EL of each sample node

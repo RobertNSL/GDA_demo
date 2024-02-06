@@ -1,0 +1,16 @@
+2024/02/06 11:24:32 PyTic        INFO     Network is connected - Keysight Technologies,N5234B,MY58421805,A.14.80.08
+2024/02/06 11:24:32 PyTic        INFO     Network configed
+2024/02/06 11:24:32 PyTic        INFO     Newmark is connected at COM5
+2024/02/06 11:24:32 PyTic        INFO     Positioner is connected
+2024/02/06 11:24:32 __main__     INFO     Positioner: None, Gimbal: None, Signal: None
+2024/02/06 11:24:35 PyTic        INFO     System mode set to - idle
+2024/02/06 11:24:35 __main__     INFO     User cmd: system.set_mode("track_signal")
+2024/02/06 11:24:35 PyTic        INFO     System mode set to - track_signal
+2024/02/06 11:24:37 __main__     INFO     Positioner: (1.0, 0.0), Gimbal: (-0.2, 0.0), Signal: -49.1
+2024/02/06 11:24:42 __main__     INFO     Positioner: (1.0, 0.0), Gimbal: (-0.5, -0.1), Signal: -45.4
+2024/02/06 11:24:47 __main__     INFO     Positioner: (1.0, 0.0), Gimbal: (-0.8, -0.2), Signal: -45.2
+2024/02/06 11:24:52 __main__     INFO     Positioner: (1.0, 0.0), Gimbal: (-0.9, -0.2), Signal: -44.7
+2024/02/06 11:24:55 __main__     INFO     User cmd: exit
+2024/02/06 11:24:55 PyTic        INFO     Positioner disconnected
+2024/02/06 11:24:55 PyTic        INFO     Newmark disconnected
+2024/02/06 11:24:55 PyTic        INFO     Network is disconnected

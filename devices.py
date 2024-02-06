@@ -254,8 +254,8 @@ class System:
 
     async def track_signal(self):  # 4 points
         await self.gimbal.set_speed(2, 2)
-        algo = DiscreteTrackingAlgo(init_step_size=0.1, init_jitter_step=0.2)
-        time_between_nodes = 0.25  # [sec]
+        algo = DiscreteTrackingAlgo(init_step_size=0.1, init_jitter_step=0.05)
+        time_between_nodes = 0.2  # [sec]
         nominal_Az, nominal_El = self.gimbal.position
         while True:
             nodes_signals = []
@@ -326,8 +326,14 @@ class DiscreteTrackingAlgo:
     def decrease_step(self):
         self.step_size = round(self.step_size/1.2, 1) if self.step_size > 0.1 else 0.1
 
+    def increase_step(self):
+        self.step_size = round(self.step_size*1.2, 1) if self.step_size < 0.5 else 0.5
+
     def decrease_jitter(self):
         self.jitter_step = round(self.jitter_step/1.2, 1) if self.jitter_step > 0.05 else 0.05
+
+    def increase_jitter(self):
+        self.jitter_step = round(self.jitter_step*1.2, 1) if self.jitter_step < 0.5 else 0.5
 
 
 class ESC:

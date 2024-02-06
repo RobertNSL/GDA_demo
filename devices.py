@@ -37,6 +37,9 @@ class Newmark:
     async def set_speed(self, speed_az, speed_el):  # deg/sec
         self.g.GCommand(f'SPA={speed_az*self.Az_steps_in_deg};SPB={speed_el*self.El_steps_in_deg}')
 
+    async def set_acceleration(self, acc_az, acc_el):
+        self.g.GCommand(f'ACA={acc_az * self.Az_steps_in_deg};ACB={acc_el * self.El_steps_in_deg};DCA={acc_az * self.Az_steps_in_deg};DCB={acc_el * self.El_steps_in_deg}')
+
     async def read_position(self, delay_sec):
         while self.g:
             await asyncio.sleep(delay_sec)
@@ -230,39 +233,33 @@ class System:
     async def idle(self):
         pass
 
-    # async def track_signal(self):  # 5 points
-    #     await self.gimbal.set_speed(2, 2)
-    #     algo = DiscreteTrackingAlgo(init_step_size=0.1, init_jitter_step=0.2)
-    #     time_between_nodes = 0.25  # [sec]
-    #     signal_hist = None
-    #     nominal_Az, nominal_El = self.gimbal.position
-    #     while True:
-    #         nodes_signals = []
-    #         # current_Az, current_El = -self.next_trajectory_position[0], self.next_trajectory_position[1]
-    #         for node in algo.sample_nodes(nominal_Az, nominal_El):  # go to nodes and save the signal at each node
-    #             await self.gimbal.go_to(node[0], node[1])
-    #             await asyncio.sleep(time_between_nodes)
-    #             nodes_signals.append(self.signal.RSSI)
-    #         nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
-    #         await self.gimbal.go_to(nominal_Az, nominal_El)
-    #         await asyncio.sleep(time_between_nodes)
-    #         if signal_hist and signal_hist > self.signal.RSSI:  # check if step size decrease needed
-    #             if algo.step_size > 0.1:
-    #                 algo.decrease_step()
-    #             else:
-    #                 algo.decrease_jitter()
-
     async def track_signal(self):  # 4 points
-        await self.gimbal.set_speed(2, 2)
-        algo = DiscreteTrackingAlgo(init_step_size=0.1, init_jitter_step=0.05)
-        time_between_nodes = 0.2  # [sec]
+        await self.gimbal.set_speed(10, 10)
+        await self.gimbal.set_acceleration(5, 5)
+        algo = DiscreteTrackingAlgo(init_step_size=0.3, init_jitter_step=0.3)
+        time_between_nodes = 0.4  # [sec]
         nominal_Az, nominal_El = self.gimbal.position
+        signal_mean_prev = None
         while True:
             nodes_signals = []
             for node in algo.sample_nodes(nominal_Az, nominal_El):  # go to nodes and save the signal at each node
                 await self.gimbal.go_to(node[0], node[1])
                 await asyncio.sleep(time_between_nodes)
                 nodes_signals.append(self.signal.RSSI)
+            signal_jitter = max(nodes_signals) - min(nodes_signals)
+            signal_mean = sum(nodes_signals) / len(nodes_signals)
+            if signal_jitter < 1:
+                algo.increase_jitter()
+            elif signal_jitter > 1:
+                algo.decrease_jitter()
+            if signal_mean_prev:
+                signal_diff = abs(signal_mean-signal_mean_prev)
+                algo.step_size = 0.2*signal_diff
+                if algo.step_size < 0.05:
+                    algo.step_size = 0.05
+                elif algo.step_size > 0.3:
+                    algo.step_size = 0.3
+            signal_mean_prev = signal_mean
             nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
 
     async def search(self):
@@ -324,16 +321,16 @@ class DiscreteTrackingAlgo:
         return az, el
 
     def decrease_step(self):
-        self.step_size = round(self.step_size/1.2, 1) if self.step_size > 0.1 else 0.1
+        self.step_size = round(self.step_size-0.05, 2) if self.step_size > 0.05 else 0.05
 
     def increase_step(self):
-        self.step_size = round(self.step_size*1.2, 1) if self.step_size < 0.5 else 0.5
+        self.step_size = round(self.step_size+0.05, 2) if self.step_size < 0.3 else 0.3
 
     def decrease_jitter(self):
-        self.jitter_step = round(self.jitter_step/1.2, 1) if self.jitter_step > 0.05 else 0.05
+        self.jitter_step = round(self.jitter_step-0.05, 2) if self.jitter_step > 0.05 else 0.05
 
     def increase_jitter(self):
-        self.jitter_step = round(self.jitter_step*1.2, 1) if self.jitter_step < 0.5 else 0.5
+        self.jitter_step = round(self.jitter_step+0.05, 2) if self.jitter_step < 0.5 else 0.5
 
 
 class ESC:

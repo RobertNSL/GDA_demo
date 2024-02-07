@@ -56,7 +56,7 @@ class Positioner:
         self.ip = ip
         self.port = port
         self.az_controller = TicController(serialnumber='00314754', current_limit=2793, max_accel=1000000, max_deccel=1000000, max_speed=20000000, step_size=StepSizes.ONEQUARTER)
-        self.el_controller = TicController(serialnumber='00305902', current_limit=2793, max_accel=1000000, max_deccel=0, max_speed=10000000, step_size=StepSizes.ONEQUARTER)
+        self.el_controller = TicController(serialnumber='00305902', current_limit=2793, max_accel=1000000, max_deccel=1000000, max_speed=20000000, step_size=StepSizes.ONEQUARTER)
         self.position = None
         self.reader, self.writer = None, None
         self.zero_position = (-58, 7)
@@ -105,9 +105,8 @@ class Positioner:
         return steps*elcal+MaxElevation
 
     async def set_speed(self, az_deg_sec, el_deg_sec):
-        # TODO: the formula is not correct
-        await self._send_cmd(self.az_controller._set_max_velocity(abs(self._az_to_steps(az_deg_sec)) * 60))
-        await self._send_cmd(self.el_controller._set_max_velocity(abs(self._el_to_steps(el_deg_sec)) * 100))
+        await self._send_cmd(self.az_controller._set_max_velocity(abs(self._az_to_steps(az_deg_sec)) * 800))
+        await self._send_cmd(self.el_controller._set_max_velocity(abs(self._el_to_steps(el_deg_sec)) * 4000))
 
     async def go_to(self, az, el):
         await self._send_cmd(self.az_controller.move(self._az_to_steps(az+self.zero_position[0])))

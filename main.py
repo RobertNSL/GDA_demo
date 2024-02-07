@@ -54,16 +54,16 @@ async def main():
     asyncio.create_task(logging_task(logger, positioner, gimbal, signal, freq_sec=1))
 
     #  Move stuff
-    await positioner.set_speed(1000, 1000)
-    await positioner.go_to(1.5, 0)
+    await positioner.set_speed(5, 5)
+    await positioner.go_to(0, 0)
     await gimbal.go_to(0, 0)
     await asyncio.sleep(3)
     await system.set_mode("idle")
-    await system.set_mode("track_signal")
-    # asyncio.create_task(system.read_trajectory())
+    # await system.set_mode("track_signal")
+    asyncio.create_task(system.read_trajectory())
 
     # asyncio.create_task(system.mode_manager())
-    # asyncio.create_task(system.positioner_follow_trajectory())
+    asyncio.create_task(system.positioner_follow_trajectory())
 
     await cli_task
     #  Disconnect devices

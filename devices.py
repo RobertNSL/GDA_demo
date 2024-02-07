@@ -5,6 +5,8 @@ import pandas as pd
 import vxi11
 from PyTic import *
 from datetime import datetime, timedelta
+import torch
+import torch.optim as optim
 
 
 class Newmark:
@@ -29,10 +31,11 @@ class Newmark:
         self.g.GClose()
         self.g = None
 
-    async def go_to(self, az, el):
+    async def go_to(self, az, el, blocking=False):
         self.g.GCommand(f'PAA={az*self.Az_steps_in_deg};PAB={el*self.El_steps_in_deg}')
-        # self.g.GCommand('BG')
-        # self.g.GMotionComplete('AB')
+        if blocking:
+            self.g.GCommand('BG')
+            self.g.GMotionComplete('AB')
 
     async def set_speed(self, speed_az, speed_el):  # deg/sec
         self.g.GCommand(f'SPA={speed_az*self.Az_steps_in_deg};SPB={speed_el*self.El_steps_in_deg}')
@@ -201,7 +204,7 @@ class Network_Analizer:
 
 class System:
     def __init__(self, mode, positioner, gimbal, signal):
-        self.modes = ["idle", "track_signal", "search"]
+        self.modes = ["idle", "track_signal_discrete", 'track_signal_SGD', 'track_signal_ESC', "search"]
         self.threshold = -65
         self.mode = mode
         self.active_mode_task = None
@@ -218,8 +221,8 @@ class System:
 
     async def mode_manager(self):
         while True:
-            if self.signal.RSSI > self.threshold and self.mode != "track_signal":
-                await self.set_mode("track_signal")
+            if self.signal.RSSI > self.threshold and self.mode != "track_signal_discrete":
+                await self.set_mode("track_signal_discrete")
             elif self.signal.RSSI < self.threshold and self.mode != "search":
                 await self.set_mode("search")
             await asyncio.sleep(5)
@@ -230,8 +233,12 @@ class System:
             self.active_mode_task.cancel()
         if mode == 'idle':
             self.active_mode_task = asyncio.create_task(self.idle())
-        elif mode == 'track_signal':
-            self.active_mode_task = asyncio.create_task(self.track_signal())
+        elif mode == 'track_signal_discrete':
+            self.active_mode_task = asyncio.create_task(self.track_signal_discrete())
+        elif mode == 'track_signal_SGD':
+            self.active_mode_task = asyncio.create_task(self.track_signal_SGD())
+        elif mode == 'track_signal_ESC':
+            self.active_mode_task = asyncio.create_task(self.track_signal_ESC())
         elif mode == 'search':
             self.active_mode_task = asyncio.create_task(self.search())
         logger.info(f"System mode set to - {mode}")
@@ -239,7 +246,7 @@ class System:
     async def idle(self):
         pass
 
-    async def track_signal(self):  # 4 points
+    async def track_signal_discrete(self):  # 4 points
         await self.gimbal.set_speed(10, 10)
         await self.gimbal.set_acceleration(5, 5)
         algo = DiscreteTrackingAlgo(init_step_size=0.3, init_jitter_step=0.3)
@@ -269,6 +276,22 @@ class System:
             signal_mean_prev = signal_mean
             trajectory_Az, trajectory_El = self.positioner_to_gimbal_axis(self.next_trajectory_position[0], self.next_trajectory_position[1])  # TODO
             nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
+
+    async def track_signal_SGD(self):
+        x = torch.tensor(self.gimbal.position[0], requires_grad=True)
+        y = torch.tensor(self.gimbal.position[1], requires_grad=True)
+        optimizer = optim.Adam([x, y], lr=0.3)
+        while True:
+            self.gimbal.go_to(x, y, blocking=True)
+            await asyncio.sleep(0.1)
+            y_pred = abs(self.signal.RSSI)
+
+            optimizer.zero_grad()
+            y_pred.backward()
+            optimizer.step()
+
+    async def track_signal_ESC(self):
+        pass
 
     async def search(self):
         await self.gimbal.set_speed(10, 10)
@@ -345,51 +368,50 @@ class DiscreteTrackingAlgo:
 class ESC:
     def __init__(self):
         pass
-
-"""
-freq = 100; % sample frequency
-dt = 1/freq;
-T = 10; % total period of simulation (in seconds)
-
-% perturbation parameters
-A = .2;  % amplitude
-omega = 10*2*pi; % 10 Hz
-phase = 0;
-K = 5;   % integration gain
-
-% high pass filter
-butterorder=1;
-butterfreq=2;  % in Hz for 'high'
-[b,a] = butter(butterorder,butterfreq*dt*2,'high')
-ys = zeros(1,butterorder+1)+y0;
-HPF=zeros(1,butterorder+1);
-
-uhat=u;
-for i=1:T/dt
-    t = (i-1)*dt;
-    time(i) = t;
-    yvals(i)=J(u,t);
+    """
+    freq = 100; % sample frequency
+    dt = 1/freq;
+    T = 10; % total period of simulation (in seconds)
     
-    for k=1:butterorder
-        ys(k) = ys(k+1);
-        HPF(k) = HPF(k+1);
-    end
-    ys(butterorder+1) = yvals(i);
+    % perturbation parameters
+    A = .2;  % amplitude
+    omega = 10*2*pi; % 10 Hz
+    phase = 0;
+    K = 5;   % integration gain
     
-    HPFnew = 0;
-    for k=1:butterorder+1
-        HPFnew = HPFnew + b(k)*ys(butterorder+2-k);
-    end
-    for k=2:butterorder+1
-        HPFnew = HPFnew - a(k)*HPF(butterorder+2-k);
-    end
-    HPFnew = HPFnew/a(1);
-    HPF(butterorder+1) = HPFnew;
+    % high pass filter
+    butterorder=1;
+    butterfreq=2;  % in Hz for 'high'
+    [b,a] = butter(butterorder,butterfreq*dt*2,'high')
+    ys = zeros(1,butterorder+1)+y0;
+    HPF=zeros(1,butterorder+1);
     
-    xi = HPFnew*sin(omega*t + phase);
-    uhat = uhat + xi*K*dt;
-    u = uhat + A*sin(omega*t + phase);
-    uhats(i) = uhat;
-    uvals(i) = u;    
-end
-"""
+    uhat=u;
+    for i=1:T/dt
+        t = (i-1)*dt;
+        time(i) = t;
+        yvals(i)=J(u,t);
+        
+        for k=1:butterorder
+            ys(k) = ys(k+1);
+            HPF(k) = HPF(k+1);
+        end
+        ys(butterorder+1) = yvals(i);
+        
+        HPFnew = 0;
+        for k=1:butterorder+1
+            HPFnew = HPFnew + b(k)*ys(butterorder+2-k);
+        end
+        for k=2:butterorder+1
+            HPFnew = HPFnew - a(k)*HPF(butterorder+2-k);
+        end
+        HPFnew = HPFnew/a(1);
+        HPF(butterorder+1) = HPFnew;
+        
+        xi = HPFnew*sin(omega*t + phase);
+        uhat = uhat + xi*K*dt;
+        u = uhat + A*sin(omega*t + phase);
+        uhats(i) = uhat;
+        uvals(i) = u;    
+    end
+    """

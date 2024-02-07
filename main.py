@@ -59,7 +59,7 @@ async def main():
     await gimbal.go_to(0, 0)
     await asyncio.sleep(3)
     await system.set_mode("idle")
-    await system.set_mode("track_signal")
+    await system.set_mode("track_signal_discrete")
     asyncio.create_task(system.read_trajectory())
 
     # asyncio.create_task(system.mode_manager())

@@ -280,18 +280,24 @@ class System:
         async def J(x, y):
             await self.gimbal.go_to(float(x), float(y), blocking=True)
             await asyncio.sleep(0.1)
-            return torch.tensor(abs(self.signal.RSSI), requires_grad=True)
+            return torch.tensor(float(abs(self.signal.RSSI)), requires_grad=True)
 
         x = torch.tensor(self.gimbal.position[0], requires_grad=True)
         y = torch.tensor(self.gimbal.position[1], requires_grad=True)
         optimizer = optim.Adam([x, y], lr=0.3)
         while True:
             loss = await J(x, y)
+            print(loss)
 
-            optimizer.zero_grad()
-            loss.backward()
-            print(loss.grad)
-            optimizer.step()
+            try:
+                # optimizer.zero_grad()
+                # loss.backward()
+                x.grad = torch.tensor(1.3)  # TODO: compute the gradient manually
+                y.grad = torch.tensor(1.5)
+                print(x.grad, y.grad)
+                optimizer.step()
+            except Exception as e:
+                print(e)
 
     async def track_signal_ESC(self):
         pass

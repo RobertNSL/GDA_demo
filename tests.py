@@ -9,12 +9,11 @@ def J(x, y):
 x = torch.tensor(3.0, requires_grad=True)
 y = torch.tensor(4.0, requires_grad=True)
 optimizer = optim.Adam([x, y], lr=0.3)
-while True:
-    print(x, y)
-    func = J(x.float(), y.float())
-    print(func)
+for i in range(5):
+    func = J(x, y)
+    print(func, x, y)
 
     optimizer.zero_grad()
     func.backward()
+    print(x.grad)
     optimizer.step()
-    print(1111)

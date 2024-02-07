@@ -284,10 +284,10 @@ class System:
         while True:
             self.gimbal.go_to(x, y, blocking=True)
             await asyncio.sleep(0.1)
-            y_pred = abs(self.signal.RSSI)
+            func = abs(self.signal.RSSI)
 
             optimizer.zero_grad()
-            y_pred.backward()
+            func.backward()
             optimizer.step()
 
     async def track_signal_ESC(self):

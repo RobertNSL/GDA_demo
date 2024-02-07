@@ -211,6 +211,11 @@ class System:
         self.trajectory = pd.read_csv("positioner_trajectory.csv")
         self.next_trajectory_position = None
 
+    def positioner_to_gimbal_axis(self, positioner_az, positioner_el):
+        gimbal_az = -positioner_az
+        gimbal_el = -positioner_el
+        return gimbal_az, gimbal_el
+
     async def mode_manager(self):
         while True:
             if self.signal.RSSI > self.threshold and self.mode != "track_signal":
@@ -262,6 +267,7 @@ class System:
                 elif algo.step_size > 0.3:
                     algo.step_size = 0.3
             signal_mean_prev = signal_mean
+            trajectory_Az, trajectory_El = self.positioner_to_gimbal_axis(self.next_trajectory_position[0], self.next_trajectory_position[1])  # TODO
             nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
 
     async def search(self):

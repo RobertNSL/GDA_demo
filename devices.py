@@ -34,7 +34,6 @@ class Newmark:
     async def go_to(self, az, el, blocking=False):
         self.g.GCommand(f'PAA={az*self.Az_steps_in_deg};PAB={el*self.El_steps_in_deg}')
         if blocking:
-            self.g.GCommand('BG')
             self.g.GMotionComplete('AB')
 
     async def set_speed(self, speed_az, speed_el):  # deg/sec
@@ -62,7 +61,7 @@ class Positioner:
         self.el_controller = TicController(serialnumber='00305902', current_limit=2793, max_accel=1000000, max_deccel=1000000, max_speed=20000000, step_size=StepSizes.ONEQUARTER)
         self.position = None
         self.reader, self.writer = None, None
-        self.zero_position = (-58, 7)
+        self.zero_position = (-57, 7)
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.ip, self.port)
@@ -274,20 +273,24 @@ class System:
                 elif algo.step_size > 0.3:
                     algo.step_size = 0.3
             signal_mean_prev = signal_mean
-            trajectory_Az, trajectory_El = self.positioner_to_gimbal_axis(self.next_trajectory_position[0], self.next_trajectory_position[1])  # TODO
+            # trajectory_Az, trajectory_El = self.positioner_to_gimbal_axis(self.next_trajectory_position[0], self.next_trajectory_position[1])  # TODO
             nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
 
     async def track_signal_SGD(self):
+        async def J(x, y):
+            await self.gimbal.go_to(float(x), float(y), blocking=True)
+            await asyncio.sleep(0.1)
+            return torch.tensor(abs(self.signal.RSSI), requires_grad=True)
+
         x = torch.tensor(self.gimbal.position[0], requires_grad=True)
         y = torch.tensor(self.gimbal.position[1], requires_grad=True)
         optimizer = optim.Adam([x, y], lr=0.3)
         while True:
-            self.gimbal.go_to(x, y, blocking=True)
-            await asyncio.sleep(0.1)
-            func = abs(self.signal.RSSI)
+            loss = await J(x, y)
 
             optimizer.zero_grad()
-            func.backward()
+            loss.backward()
+            print(loss.grad)
             optimizer.step()
 
     async def track_signal_ESC(self):

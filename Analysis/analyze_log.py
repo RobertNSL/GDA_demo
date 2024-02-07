@@ -80,7 +80,7 @@ def save_params(data: dict, filename, convergence_time, steady_state_error):
 
 
 if __name__ == '__main__':
-    for filename in ['1.log']:
+    for filename in ['2.log']:
         data = file_to_dict(filename)
         conv_time, ss_error = calc_performance(data)
         save_plot(data, filename.split('.')[0], conv_time, ss_error)

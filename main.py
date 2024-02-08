@@ -55,15 +55,15 @@ async def main():
 
     #  Move stuff
     await positioner.set_speed(5, 5)
-    await positioner.go_to(1, 0)
-    await gimbal.go_to(0, 0)
+    await positioner.go_to(0, 0)
+    await gimbal.go_to(1.5, 0)
     await asyncio.sleep(3)
     await system.set_mode("idle")
     await system.set_mode("track_signal_SGD")
-    # asyncio.create_task(system.read_trajectory())
+    asyncio.create_task(system.read_trajectory())
 
     # asyncio.create_task(system.mode_manager())
-    # asyncio.create_task(system.positioner_follow_trajectory())
+    asyncio.create_task(system.positioner_follow_trajectory())
 
     await cli_task
     #  Disconnect devices

@@ -276,25 +276,41 @@ class System:
             # trajectory_Az, trajectory_El = self.positioner_to_gimbal_axis(self.next_trajectory_position[0], self.next_trajectory_position[1])  # TODO
             nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
 
-    async def track_signal_SGD(self):
+    async def track_signal_SGD(self):  # TODO: add trajectory under of tracking
+        gradient_step = 0.05
+        rssi_measure_delay = 0.01
+        lerning_rate = 0.2
+        logger.info(f"Algo=SGD, gradient_step={gradient_step}, rssi_measure_delay={rssi_measure_delay}, lerning_rate={lerning_rate}")
+
+        await self.gimbal.set_speed(10, 10)
+        await self.gimbal.set_acceleration(5, 5)
+
+        async def calc_grad():
+            position_0 = self.gimbal.position
+            await asyncio.sleep(rssi_measure_delay)
+            signal_0 = abs(self.signal.RSSI)
+            await self.gimbal.go_to(position_0[0]+gradient_step, position_0[1], blocking=True)
+            await asyncio.sleep(rssi_measure_delay)
+            signal_dx = abs(self.signal.RSSI)
+            await self.gimbal.go_to(position_0[0], position_0[1]+gradient_step, blocking=True)
+            await asyncio.sleep(rssi_measure_delay)
+            signal_dy = abs(self.signal.RSSI)
+            grad_x = (signal_dx - signal_0) / gradient_step
+            grad_y = (signal_dy - signal_0) / gradient_step
+            return torch.tensor(grad_x), torch.tensor(grad_y)
+
         async def J(x, y):
             await self.gimbal.go_to(float(x), float(y), blocking=True)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(rssi_measure_delay)
             return torch.tensor(float(abs(self.signal.RSSI)), requires_grad=True)
 
         x = torch.tensor(self.gimbal.position[0], requires_grad=True)
         y = torch.tensor(self.gimbal.position[1], requires_grad=True)
-        optimizer = optim.Adam([x, y], lr=0.3)
+        optimizer = optim.Adam([x, y], lr=lerning_rate)
         while True:
             loss = await J(x, y)
-            print(loss)
-
             try:
-                # optimizer.zero_grad()
-                # loss.backward()
-                x.grad = torch.tensor(1.3)  # TODO: compute the gradient manually
-                y.grad = torch.tensor(1.5)
-                print(x.grad, y.grad)
+                x.grad, y.grad = await calc_grad()
                 optimizer.step()
             except Exception as e:
                 print(e)

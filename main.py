@@ -3,10 +3,13 @@ Controller loop
 """
 
 import asyncio
+import os
+import shutil
 import aioconsole
 from datetime import datetime, timedelta
 import logging
 from devices import *
+from Analysis import analyze_log
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -56,10 +59,10 @@ async def main():
     #  Move stuff
     await positioner.set_speed(5, 5)
     await positioner.go_to(0, 0)
-    await gimbal.go_to(1.5, 0)
+    await gimbal.go_to(1, 0)
     await asyncio.sleep(3)
     await system.set_mode("idle")
-    await system.set_mode("track_signal_SGD")
+    await system.set_mode("track_signal_discrete")
     asyncio.create_task(system.read_trajectory())
 
     # asyncio.create_task(system.mode_manager())
@@ -70,6 +73,10 @@ async def main():
     await positioner.disconnect()
     await gimbal.disconnect()
     await signal.disconnect()
+    # copy log to analysis folder
+    last_filename = max([int(name.split(".")[0]) for name in os.listdir("Analysis") if name.split(".")[0].isnumeric()])
+    shutil.copyfile("GDA_demo.log", os.path.join("Analysis", f"{last_filename+1}.log"))
+    analyze_log.process_log(os.path.join("Analysis", f"{last_filename+1}.log"))
 
 
 asyncio.run(main())

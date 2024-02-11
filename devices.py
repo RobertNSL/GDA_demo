@@ -197,7 +197,7 @@ class Network_Analizer:
 
     async def update_RSSI(self):
         while self.instr:
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.05)
             await self.read()
 
 
@@ -212,10 +212,11 @@ class System:
         self.signal = signal
         self.trajectory = pd.read_csv("positioner_trajectory.csv")
         self.next_trajectory_position = None
+        self.nominal_position = (0, 0)
 
-    def positioner_to_gimbal_axis(self, positioner_az, positioner_el):
-        gimbal_az = -positioner_az
-        gimbal_el = -positioner_el
+    def positioner_to_gimbal_axis(self, positioner_position):
+        gimbal_az = -positioner_position[0]
+        gimbal_el = -positioner_position[1]
         return gimbal_az, gimbal_el
 
     async def mode_manager(self):
@@ -255,7 +256,7 @@ class System:
         signal_mean_prev = None
         while True:
             nodes_signals = []
-            for node in algo.sample_nodes(nominal_Az, nominal_El):  # go to nodes and save the signal at each node
+            for node in algo.sample_nodes(nominal_Az+self.nominal_position[0], nominal_El+self.nominal_position[1]):  # go to nodes and save the signal at each node
                 await self.gimbal.go_to(node[0], node[1])
                 await asyncio.sleep(time_between_nodes)
                 nodes_signals.append(self.signal.RSSI)
@@ -273,14 +274,13 @@ class System:
                 elif algo.step_size > 0.3:
                     algo.step_size = 0.3
             signal_mean_prev = signal_mean
-            # trajectory_Az, trajectory_El = self.positioner_to_gimbal_axis(self.next_trajectory_position[0], self.next_trajectory_position[1])  # TODO
             nominal_Az, nominal_El = algo.next_position(nodes_signals, nominal_Az, nominal_El)
 
-    async def track_signal_SGD(self):  # TODO: add trajectory under of tracking
-        gradient_step = 0.05
-        rssi_measure_delay = 0.01
-        lerning_rate = 0.2
-        logger.info(f"Algo=SGD, gradient_step={gradient_step}, rssi_measure_delay={rssi_measure_delay}, lerning_rate={lerning_rate}")
+    async def track_signal_SGD(self):
+        gradient_step = 0.07  # 0.2
+        rssi_measure_delay = 0.05
+        learning_rate = 0.08  # 0.5
+        logger.info(f"Algo=SGD, gradient_step={gradient_step}, rssi_measure_delay={rssi_measure_delay}, lerning_rate={learning_rate}")
 
         await self.gimbal.set_speed(10, 10)
         await self.gimbal.set_acceleration(5, 5)
@@ -300,16 +300,18 @@ class System:
             return torch.tensor(grad_x), torch.tensor(grad_y)
 
         async def J(x, y):
-            await self.gimbal.go_to(float(x), float(y), blocking=True)
+            # await self.gimbal.go_to(float(x), float(y), blocking=True)
+            await self.gimbal.go_to(float(x)+self.nominal_position[0], float(y)+self.nominal_position[1], blocking=True)
             await asyncio.sleep(rssi_measure_delay)
             return torch.tensor(float(abs(self.signal.RSSI)), requires_grad=True)
 
         x = torch.tensor(self.gimbal.position[0], requires_grad=True)
         y = torch.tensor(self.gimbal.position[1], requires_grad=True)
-        optimizer = optim.Adam([x, y], lr=lerning_rate)
+        optimizer = optim.Adam([x, y], lr=learning_rate)
         while True:
             loss = await J(x, y)
             try:
+                optimizer.zero_grad()
                 x.grad, y.grad = await calc_grad()
                 optimizer.step()
             except Exception as e:
@@ -334,6 +336,7 @@ class System:
             except Exception as e:
                 break
             self.next_trajectory_position = (line['Azimuth'], line['Elevation'])
+            self.nominal_position = self.positioner_to_gimbal_axis(self.next_trajectory_position)
             await asyncio.sleep(1)
 
     async def positioner_follow_trajectory(self):

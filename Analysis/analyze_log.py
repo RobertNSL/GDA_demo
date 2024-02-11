@@ -1,3 +1,4 @@
+import os
 import re
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
@@ -57,6 +58,7 @@ def calc_performance(data: dict):
 
 
 def save_plot(data: dict, fig_name, convergence_time, steady_state_error):
+    plt.figure()
     plt.plot(data['Time'], data['Signal'])
     plt.xlabel('Time')
     plt.ylabel('Response')
@@ -79,9 +81,15 @@ def save_params(data: dict, filename, convergence_time, steady_state_error):
         params_file.write(f"Steady-State Error: {steady_state_error} [dB]")
 
 
+def process_log(filename):
+    data = file_to_dict(filename)
+    conv_time, ss_error = calc_performance(data)
+    save_plot(data, filename.split('.')[0], conv_time, ss_error)
+    save_params(data, filename.split('.')[0], conv_time, ss_error)
+
+
 if __name__ == '__main__':
-    for filename in ['2.log']:
-        data = file_to_dict(filename)
-        conv_time, ss_error = calc_performance(data)
-        save_plot(data, filename.split('.')[0], conv_time, ss_error)
-        save_params(data, filename.split('.')[0], conv_time, ss_error)
+    for filename in os.listdir():
+        if not filename.split(".")[0].isnumeric() or filename.split(".")[1] != "log":
+            continue
+        process_log(filename)

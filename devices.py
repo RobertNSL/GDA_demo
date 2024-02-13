@@ -69,7 +69,7 @@ class Positioner:
         self.el_controller = TicController(serialnumber='00305902', current_limit=2793, max_accel=1000000, max_deccel=1000000, max_speed=20000000, step_size=StepSizes.ONEQUARTER)
         self.position = None
         self.reader, self.writer = None, None
-        self.zero_position = (-58, 7.5)
+        self.zero_position = (-59, 7.8)
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.ip, self.port)
@@ -222,7 +222,7 @@ class System:
         self.next_trajectory_position = None
         self.nominal_position = (0, 0)
 
-    def positioner_to_gimbal_axis(self, positioner_position):
+    def positioner_to_gimbal_axis(self, positioner_position):  # TODO: change to generalized quaternion axes conversion
         gimbal_az = -positioner_position[0]
         gimbal_el = -positioner_position[1]
         return gimbal_az, gimbal_el
@@ -329,11 +329,9 @@ class System:
         await self.gimbal.set_speed(10, 10)
         await self.gimbal.set_acceleration(5, 5)
 
-        # az_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=0, K=1, axis='Azimuth')
-        # await az_axis_ESC.run(self.signal, self.gimbal)
-
-        el_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=0, K=1, axis='Elevation')
-        await el_axis_ESC.run(self.signal, self.gimbal)
+        az_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=0, K=1, axis='Azimuth')
+        el_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=np.pi/2, K=1, axis='Elevation')
+        await asyncio.gather(az_axis_ESC.run(self.signal, self.gimbal, self), el_axis_ESC.run(self.signal, self.gimbal, self))
 
     async def search(self):
         await self.gimbal.set_speed(10, 10)
@@ -419,33 +417,28 @@ class ESC:
         self.axis = axis
         logger.info(f"Algo=ESC, sample_freq={sample_freq}, A={A}, omega_Hz={omega_Hz}, phase={omega_Hz}, K={K}")
 
-    async def run(self, signal, gimbal):
+    async def run(self, signal, gimbal, system):
         y0 = signal.RSSI
         if self.axis == 'Azimuth':
             u = gimbal.position[0]  # initial position
         elif self.axis == 'Elevation':
             u = gimbal.position[1]  # initial position
+
         # High pass filter
         butterorder = 1
         butterfreq = 2  # in Hz for 'high'
         b, a = butter(butterorder, butterfreq * self.dt * 2, 'high')
         ys = np.zeros(butterorder + 1) + y0
         HPF = np.zeros(butterorder + 1)
-
         uhat = u
-        T = 30  # TODO: change to while true
-        time = np.arange(0, T, self.dt)
-        yvals = np.zeros_like(time)
-        uhats = np.zeros_like(time)
-        uvals = np.zeros_like(time)
+        t = 0
 
-        for i, t in enumerate(time):
-            yvals[i] = signal.RSSI
-
+        while True:
+            yval = signal.RSSI
             for k in range(butterorder):
                 ys[k] = ys[k + 1]
                 HPF[k] = HPF[k + 1]
-            ys[butterorder] = yvals[i]
+            ys[butterorder] = yval
 
             HPFnew = 0
             for k in range(butterorder + 1):
@@ -459,9 +452,8 @@ class ESC:
             uhat += xi * self.K * self.dt
             u = uhat + self.A * np.sin(self.omega * t + self.phase)
             if self.axis == 'Azimuth':
-                await gimbal.go_to_az(u)
+                await gimbal.go_to_az(u + system.nominal_position[0])
             elif self.axis == 'Elevation':
-                await gimbal.go_to_el(u)
-            uhats[i] = uhat
-            uvals[i] = u
+                await gimbal.go_to_el(u + system.nominal_position[1])
             await asyncio.sleep(self.dt)
+            t = t + self.dt

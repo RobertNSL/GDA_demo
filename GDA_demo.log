@@ -1,44 +1,17 @@
-2024/02/13 13:51:34 PyTic        INFO     Network is connected - Keysight Technologies,N5234B,MY58421805,A.14.80.08
-2024/02/13 13:51:34 PyTic        INFO     Network configed
-2024/02/13 13:51:35 PyTic        INFO     Newmark is connected at COM5
-2024/02/13 13:51:35 PyTic        INFO     Positioner is connected
-2024/02/13 13:51:35 PyTic        INFO     System mode set to - idle
-2024/02/13 13:51:35 __main__     INFO     Positioner: None, Gimbal: None, Signal: None
-2024/02/13 13:51:36 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -56.2
-2024/02/13 13:51:37 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -55.5
-2024/02/13 13:51:38 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -54.3
-2024/02/13 13:51:39 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -54.3
-2024/02/13 13:51:40 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -57.1
-2024/02/13 13:51:41 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -55.5
-2024/02/13 13:51:42 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -56.1
-2024/02/13 13:51:43 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -56.1
-2024/02/13 13:51:44 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -55.7
-2024/02/13 13:51:45 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -56.9
-2024/02/13 13:51:46 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -55.5
-2024/02/13 13:51:47 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -56.3
-2024/02/13 13:51:48 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.5), Signal: -57.5
-2024/02/13 13:51:48 __main__     INFO     User cmd: system.set_mode("track_signal_ESC")
-2024/02/13 13:51:48 PyTic        INFO     System mode set to - track_signal_ESC
-2024/02/13 13:51:48 PyTic        INFO     Gimbal speed set to: (10, 10) [deg/sec]
-2024/02/13 13:51:48 PyTic        INFO     Gimbal acceleration set to: (5, 5) [deg/sec^2]
-2024/02/13 13:51:48 PyTic        INFO     Algo=ESC, sample_freq=10, A=0.1, omega_Hz=1, phase=1, K=1
-2024/02/13 13:51:49 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.4), Signal: -54.6
-2024/02/13 13:51:50 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.2), Signal: -52.3
-2024/02/13 13:51:51 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, -0.0), Signal: -50.8
-2024/02/13 13:51:52 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.1), Signal: -48.6
-2024/02/13 13:51:53 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.2), Signal: -47.4
-2024/02/13 13:51:54 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.1), Signal: -47.5
-2024/02/13 13:51:55 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.2), Signal: -47.1
-2024/02/13 13:51:56 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.3), Signal: -47.6
-2024/02/13 13:51:57 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.2), Signal: -47.4
-2024/02/13 13:51:58 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.2), Signal: -47.4
-2024/02/13 13:51:59 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.3), Signal: -47.5
-2024/02/13 13:52:00 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.4), Signal: -47.6
-2024/02/13 13:52:01 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.2), Signal: -48.2
-2024/02/13 13:52:02 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.1), Signal: -47.3
-2024/02/13 13:52:03 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.3), Signal: -47.1
-2024/02/13 13:52:04 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.0, 0.4), Signal: -47.7
-2024/02/13 13:52:05 __main__     INFO     User cmd: exit
-2024/02/13 13:52:05 PyTic        INFO     Positioner disconnected
-2024/02/13 13:52:05 PyTic        INFO     Newmark disconnected
-2024/02/13 13:52:05 PyTic        INFO     Network is disconnected
+2024/02/13 17:03:48 PyTic        INFO     Network is connected - Keysight Technologies,N5234B,MY58421805,A.14.80.08
+2024/02/13 17:03:48 PyTic        INFO     Network configed
+2024/02/13 17:03:48 PyTic        INFO     Newmark is connected at COM5
+2024/02/13 17:03:48 PyTic        INFO     Positioner is connected
+2024/02/13 17:03:48 PyTic        INFO     System mode set to - idle
+2024/02/13 17:03:48 __main__     INFO     Positioner: None, Gimbal: None, Signal: None
+2024/02/13 17:03:49 __main__     INFO     Positioner: (5.200000000000003, 0.0), Gimbal: (-6.0, -0.5), Signal: -74.7
+2024/02/13 17:03:50 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-2.8, -0.5), Signal: -60.4
+2024/02/13 17:03:51 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.7, -0.5), Signal: -51.3
+2024/02/13 17:03:52 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.7, -0.5), Signal: -50.9
+2024/02/13 17:03:53 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.7, -0.5), Signal: -51.8
+2024/02/13 17:03:54 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.7, -0.5), Signal: -51.2
+2024/02/13 17:03:55 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.7, -0.5), Signal: -51.5
+2024/02/13 17:03:56 __main__     INFO     User cmd: exit
+2024/02/13 17:03:56 PyTic        INFO     Positioner disconnected
+2024/02/13 17:03:56 PyTic        INFO     Newmark disconnected
+2024/02/13 17:03:56 PyTic        INFO     Network is disconnected

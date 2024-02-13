@@ -212,7 +212,7 @@ class Network_Analizer:
 class System:
     def __init__(self, mode, positioner, gimbal, signal):
         self.modes = ["idle", "track_signal_discrete", 'track_signal_SGD', 'track_signal_ESC', "search"]
-        self.threshold = -65
+        self.threshold = -60
         self.mode = mode
         self.active_mode_task = None
         self.positioner = positioner
@@ -229,16 +229,21 @@ class System:
 
     async def mode_manager(self):
         while True:
-            if self.signal.RSSI > self.threshold and self.mode != "track_signal_discrete":
-                await self.set_mode("track_signal_discrete")
+            if self.signal.RSSI > self.threshold and self.mode != "track_signal_ESC":
+                await asyncio.sleep(2)
+                if self.signal.RSSI > self.threshold:
+                    await self.set_mode("track_signal_ESC")
             elif self.signal.RSSI < self.threshold and self.mode != "search":
-                await self.set_mode("search")
-            await asyncio.sleep(5)
+                await asyncio.sleep(2)
+                if self.signal.RSSI < self.threshold:
+                    await self.set_mode("search")
+            await asyncio.sleep(0.1)
 
     async def set_mode(self, mode):
         self.mode = mode
         if self.active_mode_task:
             self.active_mode_task.cancel()
+            await asyncio.sleep(1)
         if mode == 'idle':
             self.active_mode_task = asyncio.create_task(self.idle())
         elif mode == 'track_signal_discrete':
@@ -249,6 +254,8 @@ class System:
             self.active_mode_task = asyncio.create_task(self.track_signal_ESC())
         elif mode == 'search':
             self.active_mode_task = asyncio.create_task(self.search())
+        else:
+            print(f"No such mode '{mode}'!")
         logger.info(f"System mode set to - {mode}")
 
     async def idle(self):
@@ -335,10 +342,9 @@ class System:
 
     async def search(self):
         await self.gimbal.set_speed(10, 10)
-        while True:
-            nominal_az, nominal_el = -self.next_trajectory_position[0], self.next_trajectory_position[1]  # TODO
-            await self.gimbal.go_to(nominal_az, nominal_el)
-            await asyncio.sleep(1)
+        await self.gimbal.set_acceleration(5, 5)
+
+        await Search(range=3, step_deg=0.5).run(self)
 
     async def read_trajectory(self):
         start_time = datetime.now()
@@ -457,3 +463,25 @@ class ESC:
                 await gimbal.go_to_el(u + system.nominal_position[1])
             await asyncio.sleep(self.dt)
             t = t + self.dt
+
+
+class Search:
+    def __init__(self, range, step_deg):
+        self.range = range
+        self.step_deg = step_deg
+        logger.info(f"Algo=Search, range={range}")
+
+    async def run(self, system):
+        while True:
+            for r in np.arange(self.step_deg, self.range, self.step_deg):
+                for theta in np.arange(0, 360, 10):
+                    x = round(r * np.cos(np.deg2rad(theta)), 2) + system.nominal_position[0]
+                    y = round(r * np.sin(np.deg2rad(theta)), 2) + system.nominal_position[1]
+                    await system.gimbal.go_to(x, y)
+                    await asyncio.sleep(0.1)
+            for r in np.arange(self.range, self.step_deg, -self.step_deg):
+                for theta in np.arange(0, 360, 10):
+                    x = round(r * np.cos(np.deg2rad(theta)), 2) + system.nominal_position[0]
+                    y = round(r * np.sin(np.deg2rad(theta)), 2) + system.nominal_position[1]
+                    await system.gimbal.go_to(x, y)
+                    await asyncio.sleep(0.1)

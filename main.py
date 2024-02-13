@@ -62,11 +62,11 @@ async def main():
     await gimbal.go_to(0.7, -0.5)
     await system.set_mode("idle")
     await asyncio.sleep(3)
-    await system.set_mode("track_signal_ESC")
-    asyncio.create_task(system.read_trajectory())
+    await system.set_mode("search")
+    # asyncio.create_task(system.read_trajectory())
 
     # asyncio.create_task(system.mode_manager())
-    asyncio.create_task(system.positioner_follow_trajectory())
+    # asyncio.create_task(system.positioner_follow_trajectory())
 
     await cli_task
     #  Disconnect devices

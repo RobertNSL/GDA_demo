@@ -7,6 +7,8 @@ from PyTic import *
 from datetime import datetime, timedelta
 import torch
 import torch.optim as optim
+import numpy as np
+from scipy.signal import butter
 
 
 class Newmark:
@@ -36,6 +38,12 @@ class Newmark:
         if blocking:
             self.g.GMotionComplete('AB')
 
+    async def go_to_az(self, az):
+        self.g.GCommand(f'PAA={az*self.Az_steps_in_deg}')
+
+    async def go_to_el(self, el):
+        self.g.GCommand(f'PAB={el*self.El_steps_in_deg}')
+
     async def set_speed(self, speed_az, speed_el):  # deg/sec
         self.g.GCommand(f'SPA={speed_az*self.Az_steps_in_deg};SPB={speed_el*self.El_steps_in_deg}')
         logger.info(f"Gimbal speed set to: {speed_az, speed_el} [deg/sec]")
@@ -61,7 +69,7 @@ class Positioner:
         self.el_controller = TicController(serialnumber='00305902', current_limit=2793, max_accel=1000000, max_deccel=1000000, max_speed=20000000, step_size=StepSizes.ONEQUARTER)
         self.position = None
         self.reader, self.writer = None, None
-        self.zero_position = (-57, 7)
+        self.zero_position = (-58, 7.5)
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.ip, self.port)
@@ -318,7 +326,14 @@ class System:
                 print(e)
 
     async def track_signal_ESC(self):
-        pass
+        await self.gimbal.set_speed(10, 10)
+        await self.gimbal.set_acceleration(5, 5)
+
+        # az_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=0, K=1, axis='Azimuth')
+        # await az_axis_ESC.run(self.signal, self.gimbal)
+
+        el_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=0, K=1, axis='Elevation')
+        await el_axis_ESC.run(self.signal, self.gimbal)
 
     async def search(self):
         await self.gimbal.set_speed(10, 10)
@@ -394,52 +409,59 @@ class DiscreteTrackingAlgo:
 
 
 class ESC:
-    def __init__(self):
-        pass
-    """
-    freq = 100; % sample frequency
-    dt = 1/freq;
-    T = 10; % total period of simulation (in seconds)
-    
-    % perturbation parameters
-    A = .2;  % amplitude
-    omega = 10*2*pi; % 10 Hz
-    phase = 0;
-    K = 5;   % integration gain
-    
-    % high pass filter
-    butterorder=1;
-    butterfreq=2;  % in Hz for 'high'
-    [b,a] = butter(butterorder,butterfreq*dt*2,'high')
-    ys = zeros(1,butterorder+1)+y0;
-    HPF=zeros(1,butterorder+1);
-    
-    uhat=u;
-    for i=1:T/dt
-        t = (i-1)*dt;
-        time(i) = t;
-        yvals(i)=J(u,t);
-        
-        for k=1:butterorder
-            ys(k) = ys(k+1);
-            HPF(k) = HPF(k+1);
-        end
-        ys(butterorder+1) = yvals(i);
-        
-        HPFnew = 0;
-        for k=1:butterorder+1
-            HPFnew = HPFnew + b(k)*ys(butterorder+2-k);
-        end
-        for k=2:butterorder+1
-            HPFnew = HPFnew - a(k)*HPF(butterorder+2-k);
-        end
-        HPFnew = HPFnew/a(1);
-        HPF(butterorder+1) = HPFnew;
-        
-        xi = HPFnew*sin(omega*t + phase);
-        uhat = uhat + xi*K*dt;
-        u = uhat + A*sin(omega*t + phase);
-        uhats(i) = uhat;
-        uvals(i) = u;    
-    end
-    """
+    def __init__(self, sample_freq, A, omega_Hz, phase, K, axis):
+        self.sample_freq = sample_freq
+        self.dt = 1/self.sample_freq
+        self.A = A  # Perturbation amplitude
+        self.omega = omega_Hz * 2 * np.pi
+        self.phase = phase
+        self.K = K  # integration gain
+        self.axis = axis
+        logger.info(f"Algo=ESC, sample_freq={sample_freq}, A={A}, omega_Hz={omega_Hz}, phase={omega_Hz}, K={K}")
+
+    async def run(self, signal, gimbal):
+        y0 = signal.RSSI
+        if self.axis == 'Azimuth':
+            u = gimbal.position[0]  # initial position
+        elif self.axis == 'Elevation':
+            u = gimbal.position[1]  # initial position
+        # High pass filter
+        butterorder = 1
+        butterfreq = 2  # in Hz for 'high'
+        b, a = butter(butterorder, butterfreq * self.dt * 2, 'high')
+        ys = np.zeros(butterorder + 1) + y0
+        HPF = np.zeros(butterorder + 1)
+
+        uhat = u
+        T = 30  # TODO: change to while true
+        time = np.arange(0, T, self.dt)
+        yvals = np.zeros_like(time)
+        uhats = np.zeros_like(time)
+        uvals = np.zeros_like(time)
+
+        for i, t in enumerate(time):
+            yvals[i] = signal.RSSI
+
+            for k in range(butterorder):
+                ys[k] = ys[k + 1]
+                HPF[k] = HPF[k + 1]
+            ys[butterorder] = yvals[i]
+
+            HPFnew = 0
+            for k in range(butterorder + 1):
+                HPFnew = HPFnew + b[k] * ys[butterorder - k]
+            for k in range(1, butterorder + 1):
+                HPFnew = HPFnew - a[k] * HPF[butterorder + 1 - k]
+            HPFnew /= a[0]
+            HPF[butterorder] = HPFnew
+
+            xi = HPFnew * np.sin(self.omega * t + self.phase)
+            uhat += xi * self.K * self.dt
+            u = uhat + self.A * np.sin(self.omega * t + self.phase)
+            if self.axis == 'Azimuth':
+                await gimbal.go_to_az(u)
+            elif self.axis == 'Elevation':
+                await gimbal.go_to_el(u)
+            uhats[i] = uhat
+            uvals[i] = u
+            await asyncio.sleep(self.dt)

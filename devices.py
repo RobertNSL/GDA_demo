@@ -26,7 +26,7 @@ class Newmark:
         self.g.GOpen(f'{self.COM} --baud {self.baud}')
         logger.info(f"Newmark is connected at {self.COM}")
         self.g.GCommand('PT 1,1')  # switches to tracking mode (non-blocking)
-        asyncio.create_task(self.read_position(0.5))
+        asyncio.create_task(self.read_position(0.2))
 
     async def disconnect(self):
         logger.info("Newmark disconnected")
@@ -73,7 +73,7 @@ class Positioner:
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.ip, self.port)
-        asyncio.create_task(self.update_position(0.3))
+        asyncio.create_task(self.update_position(0.5))
         asyncio.create_task(self.Tic_reset_timeout())
         logger.info("Positioner is connected")
 
@@ -115,8 +115,8 @@ class Positioner:
         return steps*elcal+MaxElevation
 
     async def set_speed(self, az_deg_sec, el_deg_sec):
-        await self._send_cmd(self.az_controller._set_max_velocity(abs(self._az_to_steps(az_deg_sec)) * 800))
-        await self._send_cmd(self.el_controller._set_max_velocity(abs(self._el_to_steps(el_deg_sec)) * 4000))
+        await self._send_cmd(self.az_controller._set_max_velocity(int(abs(az_deg_sec)*(53.33*4)) * 10000))
+        await self._send_cmd(self.el_controller._set_max_velocity(int(abs(el_deg_sec)*(4000/13.9)) * 10000))
 
     async def go_to(self, az, el):
         await self._send_cmd(self.az_controller.move(self._az_to_steps(az+self.zero_position[0])))
@@ -211,6 +211,7 @@ class Network_Analizer:
 
 class System:
     def __init__(self, mode, positioner, gimbal, signal):
+        self.start_time = None
         self.modes = ["idle", "track_signal_discrete", 'track_signal_SGD', 'track_signal_ESC', "search"]
         self.threshold = -60
         self.mode = mode
@@ -220,7 +221,6 @@ class System:
         self.signal = signal
         self.trajectory = pd.read_csv("positioner_trajectory.csv")
         self.next_trajectory_position = None
-        self.nominal_position = (0, 0)
 
     def positioner_to_gimbal_axis(self, positioner_position):  # TODO: change to generalized quaternion axes conversion
         gimbal_az = -positioner_position[0]
@@ -230,11 +230,9 @@ class System:
     async def mode_manager(self):
         while True:
             if self.signal.RSSI > self.threshold and self.mode != "track_signal_ESC":
-                await asyncio.sleep(2)
-                if self.signal.RSSI > self.threshold:
-                    await self.set_mode("track_signal_ESC")
-            elif self.signal.RSSI < self.threshold and self.mode != "search":
-                await asyncio.sleep(2)
+                await self.set_mode("track_signal_ESC")
+            elif self.signal.RSSI < self.threshold and self.mode == "track_signal_ESC":
+                await asyncio.sleep(10)
                 if self.signal.RSSI < self.threshold:
                     await self.set_mode("search")
             await asyncio.sleep(0.1)
@@ -271,7 +269,8 @@ class System:
         signal_mean_prev = None
         while True:
             nodes_signals = []
-            for node in algo.sample_nodes(nominal_Az+self.nominal_position[0], nominal_El+self.nominal_position[1]):  # go to nodes and save the signal at each node
+            nominal_position = self.get_nominal_position()
+            for node in algo.sample_nodes(nominal_Az+nominal_position[0], nominal_El+nominal_position[1]):  # go to nodes and save the signal at each node
                 await self.gimbal.go_to(node[0], node[1])
                 await asyncio.sleep(time_between_nodes)
                 nodes_signals.append(self.signal.RSSI)
@@ -315,8 +314,8 @@ class System:
             return torch.tensor(grad_x), torch.tensor(grad_y)
 
         async def J(x, y):
-            # await self.gimbal.go_to(float(x), float(y), blocking=True)
-            await self.gimbal.go_to(float(x)+self.nominal_position[0], float(y)+self.nominal_position[1], blocking=True)
+            nominal_position = self.get_nominal_position()
+            await self.gimbal.go_to(float(x)+nominal_position[0], float(y)+nominal_position[1], blocking=True)
             await asyncio.sleep(rssi_measure_delay)
             return torch.tensor(float(abs(self.signal.RSSI)), requires_grad=True)
 
@@ -346,26 +345,36 @@ class System:
 
         await Search(range=3, step_deg=0.5).run(self)
 
-    async def read_trajectory(self):
-        start_time = datetime.now()
-        while True:
-            seconds_from_start = int((datetime.now()-start_time).total_seconds())
-            try:
-                line = self.trajectory.iloc[seconds_from_start+1]
-            except Exception as e:
-                break
-            self.next_trajectory_position = (line['Azimuth'], line['Elevation'])
-            self.nominal_position = self.positioner_to_gimbal_axis(self.next_trajectory_position)
-            await asyncio.sleep(1)
+    def get_nominal_position(self):
+        seconds_from_start = (datetime.now() - self.start_time).total_seconds()
+        az = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Azimuth'])
+        el = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Elevation'])
+        return self.positioner_to_gimbal_axis((az, el))
+
+    def read_next_trajectory_position(self):
+        seconds_from_start = int((datetime.now()-self.start_time).total_seconds())
+        try:
+            line = self.trajectory.iloc[seconds_from_start+1]
+        except Exception as e:
+            line = self.trajectory.iloc[-1]
+        return line['Azimuth'], line['Elevation']
 
     async def positioner_follow_trajectory(self):
+        self.start_time = datetime.now()
         while True:
-            az = self.next_trajectory_position[0]
-            el = self.next_trajectory_position[1]
+            az, el = self.read_next_trajectory_position()
             az_speed = az - self.positioner.position[0]
             el_speed = el - self.positioner.position[1]
             await self.positioner.go_to_at_speed(az, el, az_speed, el_speed)
             await asyncio.sleep(1)
+
+    async def go_to_start_position(self, positioner_pos: tuple, gimbal_pos: tuple):
+        await self.positioner.set_speed(20, 20)
+        await self.positioner.go_to(positioner_pos[0], positioner_pos[1])
+        await self.gimbal.go_to(gimbal_pos[0], gimbal_pos[1])
+        while self.positioner.position != positioner_pos or self.gimbal.position != gimbal_pos:
+            await asyncio.sleep(0.5)
+        await self.set_mode("idle")
 
 
 class DiscreteTrackingAlgo:
@@ -458,9 +467,9 @@ class ESC:
             uhat += xi * self.K * self.dt
             u = uhat + self.A * np.sin(self.omega * t + self.phase)
             if self.axis == 'Azimuth':
-                await gimbal.go_to_az(u + system.nominal_position[0])
+                await gimbal.go_to_az(u + system.get_nominal_position()[0])
             elif self.axis == 'Elevation':
-                await gimbal.go_to_el(u + system.nominal_position[1])
+                await gimbal.go_to_el(u + system.get_nominal_position()[1])
             await asyncio.sleep(self.dt)
             t = t + self.dt
 
@@ -474,14 +483,16 @@ class Search:
     async def run(self, system):
         while True:
             for r in np.arange(self.step_deg, self.range, self.step_deg):
-                for theta in np.arange(0, 360, 10):
-                    x = round(r * np.cos(np.deg2rad(theta)), 2) + system.nominal_position[0]
-                    y = round(r * np.sin(np.deg2rad(theta)), 2) + system.nominal_position[1]
+                for theta in np.arange(0, 360, 5):
+                    nominal_position = system.get_nominal_position()
+                    x = round(r * np.cos(np.deg2rad(theta)), 2) + nominal_position[0]
+                    y = round(r * np.sin(np.deg2rad(theta)), 2) + nominal_position[1]
                     await system.gimbal.go_to(x, y)
                     await asyncio.sleep(0.1)
             for r in np.arange(self.range, self.step_deg, -self.step_deg):
-                for theta in np.arange(0, 360, 10):
-                    x = round(r * np.cos(np.deg2rad(theta)), 2) + system.nominal_position[0]
-                    y = round(r * np.sin(np.deg2rad(theta)), 2) + system.nominal_position[1]
+                for theta in np.arange(0, 360, 5):
+                    nominal_position = system.get_nominal_position()
+                    x = round(r * np.cos(np.deg2rad(theta)), 2) + nominal_position[0]
+                    y = round(r * np.sin(np.deg2rad(theta)), 2) + nominal_position[1]
                     await system.gimbal.go_to(x, y)
                     await asyncio.sleep(0.1)

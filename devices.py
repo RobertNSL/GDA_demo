@@ -231,9 +231,12 @@ class System:
         while True:
             if self.signal.RSSI > self.threshold and self.mode != "track_signal_ESC":
                 await self.set_mode("track_signal_ESC")
-            elif self.signal.RSSI < self.threshold and self.mode == "track_signal_ESC":
-                await asyncio.sleep(10)
-                if self.signal.RSSI < self.threshold:
+            elif self.signal.RSSI < self.threshold:
+                if self.mode == "track_signal_ESC":
+                    await asyncio.sleep(10)
+                    if self.signal.RSSI < self.threshold:
+                        await self.set_mode("search")
+                elif self.mode == "idle":
                     await self.set_mode("search")
             await asyncio.sleep(0.1)
 
@@ -354,7 +357,7 @@ class System:
     def read_next_trajectory_position(self):
         seconds_from_start = int((datetime.now()-self.start_time).total_seconds())
         try:
-            line = self.trajectory.iloc[seconds_from_start+1]
+            line = self.trajectory.iloc[seconds_from_start+2]  # the next 2nd point in trajectory
         except Exception as e:
             line = self.trajectory.iloc[-1]
         return line['Azimuth'], line['Elevation']
@@ -363,8 +366,8 @@ class System:
         self.start_time = datetime.now()
         while True:
             az, el = self.read_next_trajectory_position()
-            az_speed = az - self.positioner.position[0]
-            el_speed = el - self.positioner.position[1]
+            az_speed = (az - self.positioner.position[0]) / 2
+            el_speed = (el - self.positioner.position[1]) / 2
             await self.positioner.go_to_at_speed(az, el, az_speed, el_speed)
             await asyncio.sleep(1)
 
@@ -435,9 +438,9 @@ class ESC:
     async def run(self, signal, gimbal, system):
         y0 = signal.RSSI
         if self.axis == 'Azimuth':
-            u = gimbal.position[0]  # initial position
+            u = gimbal.position[0] - system.get_nominal_position()[0]  # initial position
         elif self.axis == 'Elevation':
-            u = gimbal.position[1]  # initial position
+            u = gimbal.position[1] - system.get_nominal_position()[1]  # initial position
 
         # High pass filter
         butterorder = 1

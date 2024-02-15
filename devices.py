@@ -212,8 +212,8 @@ class Network_Analizer:
 class System:
     def __init__(self, mode, positioner, gimbal, signal):
         self.start_time = None
-        self.modes = ["idle", "track_signal_discrete", 'track_signal_SGD', 'track_signal_ESC', "search"]
-        self.threshold = -60
+        self.modes = ["idle", "track_signal_discrete", 'track_signal_SGD', 'track_signal_ESC', "search", "track_trajectory"]
+        self.threshold = -58
         self.mode = mode
         self.active_mode_task = None
         self.positioner = positioner
@@ -255,6 +255,8 @@ class System:
             self.active_mode_task = asyncio.create_task(self.track_signal_ESC())
         elif mode == 'search':
             self.active_mode_task = asyncio.create_task(self.search())
+        elif mode == 'track_trajectory':
+            self.active_mode_task = asyncio.create_task(self.track_trajectory())
         else:
             print(f"No such mode '{mode}'!")
         logger.info(f"System mode set to - {mode}")
@@ -348,10 +350,18 @@ class System:
 
         await Search(range=3, step_deg=0.5).run(self)
 
+    async def track_trajectory(self):
+        await self.gimbal.set_speed(10, 10)
+        await self.gimbal.set_acceleration(5, 5)
+        while True:
+            nominal_position = self.get_nominal_position()
+            await self.gimbal.go_to(nominal_position[0], nominal_position[1])
+            await asyncio.sleep(0.1)
+
     def get_nominal_position(self):
         seconds_from_start = (datetime.now() - self.start_time).total_seconds()
-        az = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Azimuth'])
-        el = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Elevation'])
+        az = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Azimuth']) + 2  # offset that simulates bad knowledge of the trajectory
+        el = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Elevation']) + 0
         return self.positioner_to_gimbal_axis((az, el))
 
     def read_next_trajectory_position(self):
@@ -486,14 +496,14 @@ class Search:
     async def run(self, system):
         while True:
             for r in np.arange(self.step_deg, self.range, self.step_deg):
-                for theta in np.arange(0, 360, 5):
+                for theta in np.arange(0, 360, 10):
                     nominal_position = system.get_nominal_position()
                     x = round(r * np.cos(np.deg2rad(theta)), 2) + nominal_position[0]
                     y = round(r * np.sin(np.deg2rad(theta)), 2) + nominal_position[1]
                     await system.gimbal.go_to(x, y)
                     await asyncio.sleep(0.1)
             for r in np.arange(self.range, self.step_deg, -self.step_deg):
-                for theta in np.arange(0, 360, 5):
+                for theta in np.arange(0, 360, 10):
                     nominal_position = system.get_nominal_position()
                     x = round(r * np.cos(np.deg2rad(theta)), 2) + nominal_position[0]
                     y = round(r * np.sin(np.deg2rad(theta)), 2) + nominal_position[1]

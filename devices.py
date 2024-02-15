@@ -138,7 +138,7 @@ class Positioner:
         az_position_uncertain = rec[0]
         if az_position_uncertain:
             await self._send_cmd(self.az_controller.perform_homing(dir=1))
-        az_pos = round(self._steps_to_az(rec[1]), 1)
+        az_pos = self._steps_to_az(rec[1])
 
         await self._send_cmd(self.el_controller.get_pos())
         rec = await self.reader.read(100)
@@ -146,8 +146,8 @@ class Positioner:
         el_position_uncertain = rec[0]
         if el_position_uncertain:
             await self._send_cmd(self.el_controller.perform_homing(dir=0))
-        el_pos = round(self._steps_to_el(rec[1]), 1)
-        self.position = (az_pos-self.zero_position[0], el_pos-self.zero_position[1])
+        el_pos = self._steps_to_el(rec[1])
+        self.position = (round(az_pos-self.zero_position[0], 1), round(el_pos-self.zero_position[1], 1))
 
     async def update_position(self, delay_sec):
         while True:

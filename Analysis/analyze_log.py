@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import re
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
@@ -22,9 +23,17 @@ def file_to_dict(file_name):
     def signal_from_line(line):
         return line.split('Signal: ')[1].split('\n')[0]
 
+    def positioner_from_line(line):
+        return eval(tuple_from_line(line.split('Positioner: ')[1]))
+
+    def gimbal_from_line(line):
+        return eval(tuple_from_line(line.split('Gimbal: ')[1]))
+
     time = []
     algo_params = ''
     signal = []
+    positioner_pos = []
+    gimbal_pos = []
     with open(file_name, 'r') as log:
         for line in log.readlines():
             if 'Gimbal speed set to:' in line:
@@ -35,12 +44,16 @@ def file_to_dict(file_name):
                 algo_params = (algo_params_from_line(line))
             elif 'time_between_nodes' in line:
                 algo_params = algo_params + f',time_between_nodes={time_between_nodes_from_line(line)}'
-            elif 'Signal:' in line:
+            elif 'Signal:' in line and 'None' not in line:
                 s = signal_from_line(line)
-                if s != 'None':
-                    time.append(time_from_line(line))
-                    signal.append(float(s))
-    return {'Speed': speed, 'Acceleration': acc, 'Algo_params': algo_params, 'Time': time, 'Signal': signal}
+                time.append(time_from_line(line))
+                signal.append(float(s))
+                p = positioner_from_line(line)
+                positioner_pos.append(p)
+                g = gimbal_from_line(line)
+                gimbal_pos.append(g)
+
+    return {'Speed': speed, 'Acceleration': acc, 'Algo_params': algo_params, 'Time': time, 'Signal': signal, 'Positioner': positioner_pos, 'Gimbal': gimbal_pos}
 
 
 def calc_performance(data: dict):
@@ -72,6 +85,25 @@ def save_plot(data: dict, fig_name, convergence_time, steady_state_error):
     plt.savefig(f'{fig_name}.jpg')
 
 
+def save_plot_position(data, fig_name):
+    plt.figure()
+    cmap = plt.get_cmap('inferno')
+    plt.scatter([pos[0] for pos in data['Positioner']], [pos[1] for pos in data['Positioner']], color='black', label='Positioner')
+    x = [pos[0] for pos in data['Gimbal']]
+    y = [pos[1] for pos in data['Gimbal']]
+    s = data['Signal']
+    sn = [abs(a) for a in s]
+    for i in range(len(x) - 1):
+        if i == 0:
+            plt.plot([x[i], x[i + 1]], [y[i], y[i + 1]], color=cmap(1 - ((sn[i]-min(sn)) / (max(sn)-min(sn)))), label='Gimbal')
+        else:
+            plt.plot([x[i], x[i + 1]], [y[i], y[i + 1]], color=cmap(1 - ((sn[i]-min(sn)) / (max(sn)-min(sn)))))
+    # plt.plot([pos[0] for pos in data['Gimbal']], [pos[1] for pos in data['Gimbal']], color='green', linestyle='solid', label='Gimbal')
+    plt.legend()
+    plt.grid()
+    plt.savefig(f'{fig_name}_positions.jpg')
+
+
 def save_params(data: dict, filename, convergence_time, steady_state_error):
     with open(f'{filename}.txt', 'w') as params_file:
         for key, value in data.items():
@@ -86,6 +118,7 @@ def process_log(filename):
     data = file_to_dict(filename)
     conv_time, ss_error = calc_performance(data)
     save_plot(data, filename.split('.')[0], conv_time, ss_error)
+    save_plot_position(data, filename.split('.')[0])
     save_params(data, filename.split('.')[0], conv_time, ss_error)
 
 

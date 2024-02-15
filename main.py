@@ -57,7 +57,7 @@ async def main():
     asyncio.create_task(logging_task(logger, positioner, gimbal, signal, freq_sec=1))
 
     #  Move stuff
-    await system.go_to_start_position(positioner_pos=(0, 0), gimbal_pos=(-2, 0))
+    await system.go_to_start_position(positioner_pos=(0, 0), gimbal_pos=(-2, -1))
     asyncio.create_task(system.positioner_follow_trajectory())
     asyncio.create_task(system.mode_manager())
     # await system.set_mode("track_trajectory")

@@ -66,8 +66,9 @@ def save_plot(data: dict, fig_name, convergence_time, steady_state_error):
     plt.grid(True)
     plt.xticks(rotation=45)
     plt.axhline(y=max(data['Signal']), color='black', linestyle=':')
-    plt.axhline(y=max(data['Signal'])-steady_state_error, color='black', linestyle=':')
-    plt.axvline(x=data['Time'][0]+timedelta(seconds=convergence_time), color='black', linestyle='--')
+    plt.axhline(y=max(data['Signal'])-steady_state_error, color='black', linestyle=':', label=f'SS error: {steady_state_error} [dB]')
+    plt.axvline(x=data['Time'][0]+timedelta(seconds=convergence_time), color='black', linestyle='--', label=f'Convergence time: {convergence_time} [sec]')
+    plt.legend()
     plt.savefig(f'{fig_name}.jpg')
 
 

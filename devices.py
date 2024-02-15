@@ -361,7 +361,7 @@ class System:
     def get_nominal_position(self):
         seconds_from_start = (datetime.now() - self.start_time).total_seconds()
         az = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Azimuth']) + 2  # offset that simulates bad knowledge of the trajectory
-        el = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Elevation']) + 0
+        el = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Elevation']) + 1
         return self.positioner_to_gimbal_axis((az, el))
 
     def read_next_trajectory_position(self):

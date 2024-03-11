@@ -19,6 +19,8 @@ class Newmark:
         self.El_encoder_counts_deg = 1000
         self.El_steps_in_deg = 12500
         self.position = None
+        self.az_limits = (-20, 20)
+        self.el_limits = (-5, 15)
 
     async def connect(self):
         self.g = gclib.py()
@@ -33,14 +35,23 @@ class Newmark:
         self.g = None
 
     async def go_to(self, az, el, blocking=False):
+        if (az > self.az_limits[1] or az < self.az_limits[0]) or (el > self.el_limits[1] or el < self.el_limits[0]):
+            logger.error("Gimbal - go_to position out of range")
+            return
         self.g.GCommand(f'PAA={az*self.Az_steps_in_deg};PAB={el*self.El_steps_in_deg}')
         if blocking:
             self.g.GMotionComplete('AB')
 
     async def go_to_az(self, az):
+        if az > self.az_limits[1] or az < self.az_limits[0]:
+            logger.error("Gimbal - go_to position out of range")
+            return
         self.g.GCommand(f'PAA={az*self.Az_steps_in_deg}')
 
     async def go_to_el(self, el):
+        if el > self.el_limits[1] or el < self.el_limits[0]:
+            logger.error("Gimbal - go_to position out of range")
+            return
         self.g.GCommand(f'PAB={el*self.El_steps_in_deg}')
 
     async def set_speed(self, speed_az, speed_el):  # deg/sec

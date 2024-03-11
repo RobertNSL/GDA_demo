@@ -12,9 +12,8 @@ from scipy.signal import butter
 
 
 class Newmark:
-    def __init__(self, COM, baud):
-        self.COM = COM
-        self.baud = baud
+    def __init__(self, IP):
+        self.IP = IP
         self.Az_steps_in_deg = 12500
         self.Az_encoder_counts_deg = 1000
         self.El_encoder_counts_deg = 1000
@@ -23,8 +22,8 @@ class Newmark:
 
     async def connect(self):
         self.g = gclib.py()
-        self.g.GOpen(f'{self.COM} --baud {self.baud}')
-        logger.info(f"Newmark is connected at {self.COM}")
+        self.g.GOpen(f'{self.IP}')
+        logger.info(f"Newmark is connected at {self.IP}")
         self.g.GCommand('PT 1,1')  # switches to tracking mode (non-blocking)
         asyncio.create_task(self.read_position(0.2))
 
@@ -299,7 +298,7 @@ class System:
         gradient_step = 0.07  # 0.2
         rssi_measure_delay = 0.05
         learning_rate = 0.08  # 0.5
-        logger.info(f"Algo=SGD, gradient_step={gradient_step}, rssi_measure_delay={rssi_measure_delay}, lerning_rate={learning_rate}")
+        logger.info(f"Algo=SGD, gradient_step={gradient_step}, rssi_measure_delay={rssi_measure_delay}, learning_rate={learning_rate}")
 
         await self.gimbal.set_speed(10, 10)
         await self.gimbal.set_acceleration(5, 5)
@@ -340,15 +339,15 @@ class System:
         await self.gimbal.set_speed(10, 10)
         await self.gimbal.set_acceleration(5, 5)
 
-        az_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=0, K=1, axis='Azimuth')
-        el_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=np.pi/2, K=1, axis='Elevation')
+        az_axis_ESC = ESC(sample_freq=10, A=0.15, omega_Hz=1, phase=0, K=1, axis='Azimuth')
+        el_axis_ESC = ESC(sample_freq=10, A=0.15, omega_Hz=1, phase=np.pi/2, K=1, axis='Elevation')
         await asyncio.gather(az_axis_ESC.run(self.signal, self.gimbal, self), el_axis_ESC.run(self.signal, self.gimbal, self))
 
     async def search(self):
         await self.gimbal.set_speed(10, 10)
         await self.gimbal.set_acceleration(5, 5)
 
-        await Search(range=3, step_deg=0.5).run(self)
+        await Search(range=5, step_deg=0.5).run(self)
 
     async def track_trajectory(self):
         await self.gimbal.set_speed(10, 10)
@@ -360,8 +359,8 @@ class System:
 
     def get_nominal_position(self):
         seconds_from_start = (datetime.now() - self.start_time).total_seconds()
-        az = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Azimuth']) + 2  # offset that simulates bad knowledge of the trajectory
-        el = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Elevation']) + 1
+        az = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Azimuth']) + 0  # offset that simulates bad knowledge of the trajectory
+        el = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Elevation']) + 0
         return self.positioner_to_gimbal_axis((az, el))
 
     def read_next_trajectory_position(self):
@@ -384,6 +383,7 @@ class System:
     async def go_to_start_position(self, positioner_pos: tuple, gimbal_pos: tuple):
         await self.positioner.set_speed(20, 20)
         await self.positioner.go_to(positioner_pos[0], positioner_pos[1])
+        await self.gimbal.set_speed(20, 20)
         await self.gimbal.go_to(gimbal_pos[0], gimbal_pos[1])
         while self.positioner.position != positioner_pos or self.gimbal.position != gimbal_pos:
             await asyncio.sleep(0.5)
@@ -496,16 +496,16 @@ class Search:
     async def run(self, system):
         while True:
             for r in np.arange(self.step_deg, self.range, self.step_deg):
-                for theta in np.arange(0, 360, 10):
+                for theta in np.arange(0, 360, 5):
                     nominal_position = system.get_nominal_position()
                     x = round(r * np.cos(np.deg2rad(theta)), 2) + nominal_position[0]
                     y = round(r * np.sin(np.deg2rad(theta)), 2) + nominal_position[1]
                     await system.gimbal.go_to(x, y)
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.01)
             for r in np.arange(self.range, self.step_deg, -self.step_deg):
-                for theta in np.arange(0, 360, 10):
+                for theta in np.arange(0, 360, 5):
                     nominal_position = system.get_nominal_position()
                     x = round(r * np.cos(np.deg2rad(theta)), 2) + nominal_position[0]
                     y = round(r * np.sin(np.deg2rad(theta)), 2) + nominal_position[1]
                     await system.gimbal.go_to(x, y)
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(0.01)

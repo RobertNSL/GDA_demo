@@ -19,8 +19,8 @@ logging.basicConfig(level=logging.INFO,
 logger = logging.getLogger(__name__)
 
 positioner = Positioner('192.168.200.211', 65432)
-gimbal = Newmark('COM5', 19200)
-signal = Network_Analizer("192.168.200.88", start_freq=28, measure_freq=29, stop_freq=30)
+gimbal = Newmark('192.168.200.59')
+signal = Network_Analizer("192.168.200.88", start_freq=19.2, measure_freq=20.2, stop_freq=21.2)
 system = System(mode="idle", positioner=positioner, gimbal=gimbal, signal=signal)
 
 
@@ -57,7 +57,7 @@ async def main():
     asyncio.create_task(logging_task(logger, positioner, gimbal, signal, freq_sec=1))
 
     #  Move stuff
-    await system.go_to_start_position(positioner_pos=(0, 0), gimbal_pos=(-2, -1))
+    await system.go_to_start_position(positioner_pos=(0, 0), gimbal_pos=(0, 0))
     asyncio.create_task(system.positioner_follow_trajectory())
     asyncio.create_task(system.mode_manager())
     # await system.set_mode("track_trajectory")

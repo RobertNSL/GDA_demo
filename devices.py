@@ -75,23 +75,11 @@ class Positioner:
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
-        self.az_controller = TicController(serialnumber='00314754', current_limit=2793, max_accel=1000000, max_deccel=1000000, max_speed=20000000, step_size=StepSizes.ONEQUARTER)
-        self.el_controller = TicController(serialnumber='00305902', current_limit=2793, max_accel=1000000, max_deccel=1000000, max_speed=20000000, step_size=StepSizes.ONEQUARTER)
         self.position = None
-        self.reader, self.writer = None, None
-        self.zero_position = (-59, 7.8)
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.ip, self.port)
-        asyncio.create_task(self.update_position(0.5))
-        asyncio.create_task(self.Tic_reset_timeout())
         logger.info("Positioner is connected")
-
-    async def Tic_reset_timeout(self):
-        while self.writer:
-            await asyncio.sleep(0.8)
-            await self._send_cmd(self.az_controller.reset_command_timeout())
-            await self._send_cmd(self.el_controller.reset_command_timeout())
 
     async def disconnect(self):
         await self._send_cmd("exit")
@@ -101,68 +89,12 @@ class Positioner:
         logger.info("Positioner disconnected")
 
     async def _send_cmd(self, cmd: str):
-        self.writer.write(f'{cmd}\n'.encode())
+        self.writer.write(f'{cmd}'.encode())
         await self.writer.drain()
 
-    def _az_to_steps(self, deg):
-        AZ_Zero = 90
-        azcal = 1 / (53.33 * 4)
-        return int((deg-AZ_Zero)/azcal)
-
-    def _steps_to_az(self, steps):
-        AZ_Zero = 90
-        azcal = 1 / (53.33 * 4)
-        return steps*azcal+AZ_Zero
-
-    def _el_to_steps(self, deg):
-        MaxElevation = 18.8
-        elcal=-13.9/(1000*4)
-        return int((deg-MaxElevation)/elcal)
-
-    def _steps_to_el(self, steps):
-        MaxElevation = 18.8
-        elcal=-13.9/(1000*4)
-        return steps*elcal+MaxElevation
-
-    async def set_speed(self, az_deg_sec, el_deg_sec):
-        await self._send_cmd(self.az_controller._set_max_velocity(int(abs(az_deg_sec)*(53.33*4)) * 10000))
-        await self._send_cmd(self.el_controller._set_max_velocity(int(abs(el_deg_sec)*(4000/13.9)) * 10000))
-
-    async def go_to(self, az, el):
-        await self._send_cmd(self.az_controller.move(self._az_to_steps(az+self.zero_position[0])))
-        await self._send_cmd(self.el_controller.move(self._el_to_steps(el+self.zero_position[1])))
-
-    async def go_to_at_speed(self, az, el, az_deg_sec, el_deg_sec):
-        await self.set_speed(az_deg_sec, el_deg_sec)
-        await self.go_to(az, el)
-
-    async def get_position(self):
-        if self.reader is None:
-            return
-        await self._send_cmd(self.az_controller.get_pos())
-        rec = await self.reader.read(100)
-        try:
-            rec = eval(rec.decode())
-        except:
-            return
-        az_position_uncertain = rec[0]
-        if az_position_uncertain:
-            await self._send_cmd(self.az_controller.perform_homing(dir=1))
-        az_pos = self._steps_to_az(rec[1])
-
-        await self._send_cmd(self.el_controller.get_pos())
-        rec = await self.reader.read(100)
-        rec = eval(rec.decode())
-        el_position_uncertain = rec[0]
-        if el_position_uncertain:
-            await self._send_cmd(self.el_controller.perform_homing(dir=0))
-        el_pos = self._steps_to_el(rec[1])
-        self.position = (round(az_pos-self.zero_position[0], 1), round(el_pos-self.zero_position[1], 1))
-
-    async def update_position(self, delay_sec):
-        while True:
-            await asyncio.sleep(delay_sec)
-            await self.get_position()
+    async def track(self):
+        # TODO: update the position by interpolating from positioner_trajectory.csv
+        await self._send_cmd('track()')
 
 
 class Network_Analizer:
@@ -383,20 +315,13 @@ class System:
         return line['Azimuth'], line['Elevation']
 
     async def positioner_follow_trajectory(self):
-        self.start_time = datetime.now()
-        while True:
-            az, el = self.read_next_trajectory_position()
-            az_speed = (az - self.positioner.position[0]) / 2
-            el_speed = (el - self.positioner.position[1]) / 2
-            await self.positioner.go_to_at_speed(az, el, az_speed, el_speed)
-            await asyncio.sleep(1)
+        await self.positioner.track()
 
-    async def go_to_start_position(self, positioner_pos: tuple, gimbal_pos: tuple):
-        await self.positioner.set_speed(20, 20)
-        await self.positioner.go_to(positioner_pos[0], positioner_pos[1])
+
+    async def go_to_start_position(self, gimbal_pos: tuple):
         await self.gimbal.set_speed(20, 20)
         await self.gimbal.go_to(gimbal_pos[0], gimbal_pos[1])
-        while self.positioner.position != positioner_pos or self.gimbal.position != gimbal_pos:
+        while self.gimbal.position != gimbal_pos:
             await asyncio.sleep(0.5)
         await self.set_mode("idle")
 

@@ -1,53 +1,146 @@
-2024/02/15 14:07:43 PyTic        INFO     Network is connected - Keysight Technologies,N5234B,MY58421805,A.14.80.08
-2024/02/15 14:07:43 PyTic        INFO     Network configed
-2024/02/15 14:07:44 PyTic        INFO     Newmark is connected at COM5
-2024/02/15 14:07:44 PyTic        INFO     Positioner is connected
-2024/02/15 14:07:44 __main__     INFO     Positioner: None, Gimbal: None, Signal: None
-2024/02/15 14:07:45 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-1.6, -1.0), Signal: -64.7
-2024/02/15 14:07:46 PyTic        INFO     System mode set to - idle
-2024/02/15 14:07:46 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-2.0, -1.0), Signal: -75.1
-2024/02/15 14:07:47 PyTic        INFO     System mode set to - search
-2024/02/15 14:07:47 PyTic        INFO     Gimbal speed set to: (10, 10) [deg/sec]
-2024/02/15 14:07:47 PyTic        INFO     Gimbal acceleration set to: (5, 5) [deg/sec^2]
-2024/02/15 14:07:47 PyTic        INFO     Algo=Search, range=3
-2024/02/15 14:07:47 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-1.9, -1.0), Signal: -65.5
-2024/02/15 14:07:48 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-1.8, -0.5), Signal: -63.8
-2024/02/15 14:07:49 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-2.3, -0.6), Signal: -63.7
-2024/02/15 14:07:50 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-2.5, -1.0), Signal: -73.4
-2024/02/15 14:07:51 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-2.2, -1.4), Signal: -71.9
-2024/02/15 14:07:52 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-1.7, -1.4), Signal: -92.7
-2024/02/15 14:07:53 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-1.4, -1.0), Signal: -65.7
-2024/02/15 14:07:54 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-1.6, -0.1), Signal: -61.6
-2024/02/15 14:07:55 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-2.6, -0.1), Signal: -74.1
-2024/02/15 14:07:56 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-3.0, -1.0), Signal: -76.5
-2024/02/15 14:07:57 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-2.5, -1.9), Signal: -70.3
-2024/02/15 14:07:58 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-1.5, -1.8), Signal: -69.3
-2024/02/15 14:07:59 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.9, -1.0), Signal: -56.7
-2024/02/15 14:08:00 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.6, -0.5), Signal: -61.1
-2024/02/15 14:08:00 PyTic        INFO     System mode set to - track_signal_ESC
-2024/02/15 14:08:00 PyTic        INFO     Gimbal speed set to: (10, 10) [deg/sec]
-2024/02/15 14:08:00 PyTic        INFO     Gimbal acceleration set to: (5, 5) [deg/sec^2]
-2024/02/15 14:08:00 PyTic        INFO     Algo=ESC, sample_freq=10, A=0.1, omega_Hz=1, phase=1, K=1
-2024/02/15 14:08:00 PyTic        INFO     Algo=ESC, sample_freq=10, A=0.1, omega_Hz=1, phase=1, K=1
-2024/02/15 14:08:01 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.3, -0.3), Signal: -52.4
-2024/02/15 14:08:02 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (-0.1, -0.0), Signal: -46.1
-2024/02/15 14:08:03 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.2, 0.2), Signal: -45.5
-2024/02/15 14:08:04 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.3, 0.1), Signal: -45.2
-2024/02/15 14:08:05 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.3, 0.2), Signal: -45.9
-2024/02/15 14:08:06 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.1, 0.2), Signal: -44.6
-2024/02/15 14:08:07 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.0, 0.1), Signal: -45.1
-2024/02/15 14:08:08 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.2, 0.1), Signal: -44.9
-2024/02/15 14:08:09 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.2, 0.2), Signal: -45.2
-2024/02/15 14:08:10 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.1, 0.0), Signal: -45.4
-2024/02/15 14:08:11 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.3, 0.1), Signal: -45.5
-2024/02/15 14:08:12 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.2, 0.2), Signal: -45.1
-2024/02/15 14:08:14 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.1, 0.1), Signal: -44.8
-2024/02/15 14:08:15 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.1, -0.0), Signal: -45.9
-2024/02/15 14:08:16 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.2, 0.2), Signal: -45.4
-2024/02/15 14:08:17 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.1, 0.2), Signal: -45.6
-2024/02/15 14:08:18 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.1, -0.0), Signal: -45.4
-2024/02/15 14:08:19 __main__     INFO     Positioner: (0.0, 0.0), Gimbal: (0.1, 0.0), Signal: -45.2
-2024/02/15 14:08:19 __main__     INFO     User cmd: exit
-2024/02/15 14:08:19 PyTic        INFO     Positioner disconnected
-2024/02/15 14:08:19 PyTic        INFO     Newmark disconnected
-2024/02/15 14:08:19 PyTic        INFO     Network is disconnected
+2024/04/10 16:59:04 PyTic        INFO     Network is connected - Keysight Technologies,N5234B,MY58421805,A.14.80.08
+2024/04/10 16:59:04 PyTic        INFO     Network configed
+2024/04/10 16:59:04 PyTic        INFO     Newmark is connected at 192.168.200.59
+2024/04/10 16:59:04 PyTic        INFO     Positioner is connected
+2024/04/10 16:59:04 PyTic        INFO     Gimbal speed set to: (20, 20) [deg/sec]
+2024/04/10 16:59:04 __main__     INFO     Positioner: None, Gimbal: None, Signal: None
+2024/04/10 16:59:05 PyTic        INFO     System mode set to - idle
+2024/04/10 16:59:05 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -67.8
+2024/04/10 16:59:06 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -72.8
+2024/04/10 16:59:07 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -72.4
+2024/04/10 16:59:08 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -74.1
+2024/04/10 16:59:09 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -79.2
+2024/04/10 16:59:10 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -73.2
+2024/04/10 16:59:11 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -73.3
+2024/04/10 16:59:12 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -71.7
+2024/04/10 16:59:13 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -68.9
+2024/04/10 16:59:14 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -67.9
+2024/04/10 16:59:15 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -81.5
+2024/04/10 16:59:16 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -83.3
+2024/04/10 16:59:17 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -83.7
+2024/04/10 16:59:18 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -69.0
+2024/04/10 16:59:19 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -82.6
+2024/04/10 16:59:20 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -69.3
+2024/04/10 16:59:21 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -70.8
+2024/04/10 16:59:22 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -75.0
+2024/04/10 16:59:23 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -76.0
+2024/04/10 16:59:24 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -69.8
+2024/04/10 16:59:25 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -74.1
+2024/04/10 16:59:26 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -98.0
+2024/04/10 16:59:27 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -78.9
+2024/04/10 16:59:28 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -80.4
+2024/04/10 16:59:29 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -76.2
+2024/04/10 16:59:30 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -78.0
+2024/04/10 16:59:31 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -80.7
+2024/04/10 16:59:32 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -69.6
+2024/04/10 16:59:33 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -87.4
+2024/04/10 16:59:34 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -79.1
+2024/04/10 16:59:35 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -72.2
+2024/04/10 16:59:36 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -69.1
+2024/04/10 16:59:37 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -67.8
+2024/04/10 16:59:38 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -71.1
+2024/04/10 16:59:39 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -76.5
+2024/04/10 16:59:40 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -77.1
+2024/04/10 16:59:41 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -70.0
+2024/04/10 16:59:42 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -73.0
+2024/04/10 16:59:43 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -74.2
+2024/04/10 16:59:44 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -80.3
+2024/04/10 16:59:45 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -69.6
+2024/04/10 16:59:46 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -76.4
+2024/04/10 16:59:47 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -86.4
+2024/04/10 16:59:48 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -70.1
+2024/04/10 16:59:49 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -76.5
+2024/04/10 16:59:51 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -72.8
+2024/04/10 16:59:52 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -77.4
+2024/04/10 16:59:53 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -69.9
+2024/04/10 16:59:54 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -70.8
+2024/04/10 16:59:55 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -75.7
+2024/04/10 16:59:56 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -70.1
+2024/04/10 16:59:57 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -85.3
+2024/04/10 16:59:58 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -68.7
+2024/04/10 16:59:59 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -67.7
+2024/04/10 17:00:00 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -67.8
+2024/04/10 17:00:01 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -72.5
+2024/04/10 17:00:02 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -79.3
+2024/04/10 17:00:03 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -74.3
+2024/04/10 17:00:04 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -81.5
+2024/04/10 17:00:05 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -69.2
+2024/04/10 17:00:06 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -73.2
+2024/04/10 17:00:07 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -76.3
+2024/04/10 17:00:08 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -68.9
+2024/04/10 17:00:09 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -9.3
+2024/04/10 17:00:10 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -14.7
+2024/04/10 17:00:11 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -21.7
+2024/04/10 17:00:12 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -14.4
+2024/04/10 17:00:13 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -22.1
+2024/04/10 17:00:14 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -10.6
+2024/04/10 17:00:15 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -17.0
+2024/04/10 17:00:16 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -28.3
+2024/04/10 17:00:17 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -5.7
+2024/04/10 17:00:18 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -16.5
+2024/04/10 17:00:19 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -17.2
+2024/04/10 17:00:20 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -7.5
+2024/04/10 17:00:21 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -29.1
+2024/04/10 17:00:22 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -36.1
+2024/04/10 17:00:23 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -8.2
+2024/04/10 17:00:24 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: 3.8
+2024/04/10 17:00:25 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -14.3
+2024/04/10 17:00:26 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -18.4
+2024/04/10 17:00:27 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -17.8
+2024/04/10 17:00:28 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -27.6
+2024/04/10 17:00:29 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -22.2
+2024/04/10 17:00:30 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -20.3
+2024/04/10 17:00:31 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -29.6
+2024/04/10 17:00:32 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -19.4
+2024/04/10 17:00:33 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -24.2
+2024/04/10 17:00:34 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -24.6
+2024/04/10 17:00:35 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -19.2
+2024/04/10 17:00:36 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -9.8
+2024/04/10 17:00:37 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -19.9
+2024/04/10 17:00:38 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -13.0
+2024/04/10 17:00:39 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -10.2
+2024/04/10 17:00:40 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -18.4
+2024/04/10 17:00:41 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -19.8
+2024/04/10 17:00:42 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -2.7
+2024/04/10 17:00:43 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -17.3
+2024/04/10 17:00:44 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -14.2
+2024/04/10 17:00:45 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -25.6
+2024/04/10 17:00:46 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -15.2
+2024/04/10 17:00:47 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -17.4
+2024/04/10 17:00:48 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -14.7
+2024/04/10 17:00:49 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -20.0
+2024/04/10 17:00:50 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -17.8
+2024/04/10 17:00:51 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -18.2
+2024/04/10 17:00:52 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -11.6
+2024/04/10 17:00:53 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -16.6
+2024/04/10 17:00:54 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -20.5
+2024/04/10 17:00:55 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -24.4
+2024/04/10 17:00:56 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -27.5
+2024/04/10 17:00:57 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -13.9
+2024/04/10 17:00:58 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -14.7
+2024/04/10 17:00:59 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -12.5
+2024/04/10 17:01:00 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -22.2
+2024/04/10 17:01:01 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -15.4
+2024/04/10 17:01:02 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -18.4
+2024/04/10 17:01:03 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -11.6
+2024/04/10 17:01:04 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -22.9
+2024/04/10 17:01:05 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -20.1
+2024/04/10 17:01:06 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -18.8
+2024/04/10 17:01:07 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -25.1
+2024/04/10 17:01:08 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -21.7
+2024/04/10 17:01:09 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -29.4
+2024/04/10 17:01:10 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -19.7
+2024/04/10 17:01:11 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -1.2
+2024/04/10 17:01:12 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -20.8
+2024/04/10 17:01:13 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -16.6
+2024/04/10 17:01:14 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -28.3
+2024/04/10 17:01:15 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -15.7
+2024/04/10 17:01:16 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -25.8
+2024/04/10 17:01:17 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -36.9
+2024/04/10 17:01:18 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -22.0
+2024/04/10 17:01:19 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: -9.8
+2024/04/10 17:01:20 __main__     INFO     Positioner: None, Gimbal: (0.0, 0.0), Signal: 0.9
+2024/04/10 17:01:21 __main__     INFO     User cmd: exit
+2024/04/10 17:01:21 PyTic        INFO     Positioner disconnected
+2024/04/10 17:01:21 PyTic        INFO     Newmark disconnected
+2024/04/10 17:01:21 PyTic        INFO     Network is disconnected

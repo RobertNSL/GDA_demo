@@ -49,7 +49,6 @@ async def main():
     # Start user interface
     cli_task = asyncio.create_task(cli(positioner, signal, gimbal, system))
 
-
     #  Connect positioner, gimbal, Network
     await asyncio.gather(signal.connect(), positioner.connect(), gimbal.connect())
 
@@ -57,9 +56,9 @@ async def main():
     asyncio.create_task(logging_task(logger, positioner, gimbal, signal, freq_sec=1))
 
     #  Move stuff
-    await system.go_to_start_position(positioner_pos=(0, 0), gimbal_pos=(0, 0))
+    await system.go_to_start_position(gimbal_pos=(0, 0))
     asyncio.create_task(system.positioner_follow_trajectory())
-    asyncio.create_task(system.mode_manager())
+    # asyncio.create_task(system.mode_manager())
     # await system.set_mode("track_trajectory")
 
     await cli_task

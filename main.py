@@ -58,7 +58,7 @@ async def main():
     #  Move stuff
     await system.go_to_start_position(gimbal_pos=(0, 0))
     asyncio.create_task(system.positioner_follow_trajectory())
-    # asyncio.create_task(system.mode_manager())
+    asyncio.create_task(system.mode_manager())
     # await system.set_mode("track_trajectory")
 
     await cli_task

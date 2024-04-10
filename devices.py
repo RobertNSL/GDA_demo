@@ -93,7 +93,6 @@ class Positioner:
         await self.writer.drain()
 
     async def track(self):
-        # TODO: update the position by interpolating from positioner_trajectory.csv
         await self._send_cmd('track()')
 
 
@@ -316,7 +315,14 @@ class System:
 
     async def positioner_follow_trajectory(self):
         await self.positioner.track()
-
+        self.start_time = datetime.now()
+        seconds_from_start = 0
+        while seconds_from_start <= self.trajectory['Time'].max():
+            seconds_from_start = (datetime.now() - self.start_time).total_seconds()
+            az = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Azimuth'])
+            el = np.interp(seconds_from_start, self.trajectory['Time'], self.trajectory['Elevation'])
+            self.positioner.position = (round(az, 1), round(el, 1))
+            await asyncio.sleep(1)
 
     async def go_to_start_position(self, gimbal_pos: tuple):
         await self.gimbal.set_speed(20, 20)

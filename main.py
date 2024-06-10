@@ -3,6 +3,7 @@ Controller loop
 """
 
 import asyncio
+import keyboard
 import os
 import shutil
 import aioconsole
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 positioner = Positioner('192.168.200.211', 65432)
 gimbal = Newmark('192.168.200.59')
-signal = Network_Analizer("192.168.200.88", start_freq=19.2, measure_freq=20.2, stop_freq=21.2)
+signal = Network_Analizer("192.168.200.88", start_freq=29.2, measure_freq=30.2, stop_freq=31.2)
 system = System(mode="idle", positioner=positioner, gimbal=gimbal, signal=signal)
 
 
@@ -28,6 +29,19 @@ async def logging_task(logger, positioner, gimbal, signal, freq_sec):
     while True:
         logger.info(f'Positioner: {positioner.position}, Gimbal: {gimbal.position}, Signal: {signal.RSSI}')
         await asyncio.sleep(freq_sec)
+
+
+async def gimbal_manual_move(step=0.5):
+    while True:
+        if keyboard.is_pressed('shift+right'):
+            await gimbal.go_to_az(gimbal.position[0] + step)
+        elif keyboard.is_pressed('shift+left'):
+            await gimbal.go_to_az(gimbal.position[0] - step)
+        elif keyboard.is_pressed('shift+up'):
+            await gimbal.go_to_el(gimbal.position[1] + step)
+        elif keyboard.is_pressed('shift+down'):
+            await gimbal.go_to_el(gimbal.position[1] - step)
+        await asyncio.sleep(0.2)
 
 
 async def cli(*objects):
@@ -48,17 +62,17 @@ async def cli(*objects):
 async def main():
     # Start user interface
     cli_task = asyncio.create_task(cli(positioner, signal, gimbal, system))
+    asyncio.run_coroutine_threadsafe(gimbal_manual_move(), asyncio.get_running_loop())
 
     #  Connect positioner, gimbal, Network
     await asyncio.gather(signal.connect(), positioner.connect(), gimbal.connect())
-
     # Start logger
     asyncio.create_task(logging_task(logger, positioner, gimbal, signal, freq_sec=1))
 
     #  Move stuff
     await system.go_to_start_position(gimbal_pos=(0, 0))
     asyncio.create_task(system.positioner_follow_trajectory())
-    asyncio.create_task(system.mode_manager())
+    # asyncio.create_task(system.mode_manager())
     # await system.set_mode("track_trajectory")
 
     await cli_task

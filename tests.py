@@ -1,3 +1,5 @@
+import time
+from datetime import datetime
 from pyquaternion import Quaternion
 import numpy as np
 from devices import Newmark
@@ -72,7 +74,7 @@ def rectengular_pattern(az_range=(-3, 3), el_range=(-3, 3), az_step=0.1, el_step
 
 
 gimbal = Newmark('192.168.200.59')
-signal = Network_Analizer("192.168.200.88", start_freq=19.2, measure_freq=20.2, stop_freq=21.2)
+signal = Network_Analizer("192.168.200.88", start_freq=29.2, measure_freq=30.2, stop_freq=31.2)
 log = {'idx': [], 'Az': [], 'El': []}
 
 
@@ -98,8 +100,10 @@ async def main():
     await signal.disconnect()
 
 
+a = time.time()
 asyncio.run(main())
-
+code_duration = time.time()-a
+print(f'Duration: {code_duration} sec')
 
 """
 

@@ -70,6 +70,9 @@ class Newmark:
             el = round(int(result[1])/self.El_encoder_counts_deg, 1)
             self.position = az, el
 
+    async def zero_position(self):
+        self.g.GCommand('DPA=0;DPB=0;DEA=0;DEB=0')
+
 
 class Positioner:
     def __init__(self, ip, port):
@@ -281,8 +284,8 @@ class System:
         await self.gimbal.set_speed(10, 10)
         await self.gimbal.set_acceleration(5, 5)
 
-        az_axis_ESC = ESC(sample_freq=10, A=0.15, omega_Hz=1, phase=0, K=1, axis='Azimuth')
-        el_axis_ESC = ESC(sample_freq=10, A=0.15, omega_Hz=1, phase=np.pi/2, K=1, axis='Elevation')
+        az_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=0, K=1, axis='Azimuth')
+        el_axis_ESC = ESC(sample_freq=10, A=0.1, omega_Hz=1, phase=np.pi/2, K=1, axis='Elevation')
         await asyncio.gather(az_axis_ESC.run(self.signal, self.gimbal, self), el_axis_ESC.run(self.signal, self.gimbal, self))
 
     async def search(self):
@@ -443,11 +446,11 @@ class Search:
                     x = round(r * np.cos(np.deg2rad(theta)), 2) + nominal_position[0]
                     y = round(r * np.sin(np.deg2rad(theta)), 2) + nominal_position[1]
                     await system.gimbal.go_to(x, y)
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0.1)
             for r in np.arange(self.range, self.step_deg, -self.step_deg):
                 for theta in np.arange(0, 360, 5):
                     nominal_position = system.get_nominal_position()
                     x = round(r * np.cos(np.deg2rad(theta)), 2) + nominal_position[0]
                     y = round(r * np.sin(np.deg2rad(theta)), 2) + nominal_position[1]
                     await system.gimbal.go_to(x, y)
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0.1)

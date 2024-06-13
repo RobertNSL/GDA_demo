@@ -165,23 +165,35 @@ class System:
         self.signal = signal
         self.trajectory = pd.read_csv("positioner_trajectory.csv")
         self.next_trajectory_position = None
+        self.mode_manager_on = True
 
     def positioner_to_gimbal_axis(self, positioner_position):  # TODO: change to generalized quaternion axes conversion
         gimbal_az = -positioner_position[0]
         gimbal_el = -positioner_position[1]
         return gimbal_az, gimbal_el
 
+    async def set_mode_manager(self, mode):
+        if mode == 'ON':
+            self.mode_manager_on = True
+            logger.info("User turned mode manager ON")
+        elif mode == 'OFF':
+            self.mode_manager_on = False
+            logger.info("User turned mode manager OFF")
+
     async def mode_manager(self):
         while True:
-            if self.signal.RSSI > self.threshold and self.mode != "track_signal_ESC":
-                await self.set_mode("track_signal_ESC")
-            elif self.signal.RSSI < self.threshold:
-                if self.mode == "track_signal_ESC":
-                    await asyncio.sleep(10)
-                    if self.signal.RSSI < self.threshold:
+            if not self.mode_manager_on:
+                pass
+            else:
+                if self.signal.RSSI > self.threshold and self.mode != "track_signal_ESC":
+                    await self.set_mode("track_signal_ESC")
+                elif self.signal.RSSI < self.threshold:
+                    if self.mode == "track_signal_ESC":
+                        await asyncio.sleep(10)
+                        if self.signal.RSSI < self.threshold:
+                            await self.set_mode("search")
+                    elif self.mode == "idle":
                         await self.set_mode("search")
-                elif self.mode == "idle":
-                    await self.set_mode("search")
             await asyncio.sleep(0.1)
 
     async def set_mode(self, mode):
